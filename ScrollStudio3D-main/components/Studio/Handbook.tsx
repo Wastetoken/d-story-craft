@@ -22,13 +22,121 @@ export const Handbook: React.FC = () => {
   const contentRef = useRef<HTMLDivElement>(null);
 
   const handleCopyAll = () => {
-    if (contentRef.current) {
-      const text = contentRef.current.innerText;
-      navigator.clipboard.writeText(text).then(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      });
-    }
+    const allDocs = `SCROLLSTUDIO MANUAL — FULL DOCUMENTATION
+
+═══ DIRECTING ═══
+
+MULTI-CHAPTER SYSTEM
+Projects are organized into Chapters. Each chapter holds a unique 3D model, lighting rig, camera path, and narrative sequence.
+• Auto-Distribute: Automatically spans chapters across the total scroll progress so they tile evenly.
+• Chapter Transitions: Smooth cinematic flares trigger when the scroll crosses between chapters.
+• Independent Timelines: Each chapter has its own keyframes, story beats, and DOM sections — fully self-contained.
+
+TIMELINE & KEYFRAMES
+The timeline at the bottom of the studio has three rows:
+• Keyframes Row: Capture camera positions at any scroll percentage. The engine builds a smooth Catmull-Rom Spline between them.
+• Story Row: Add narrative beats — full-screen text moments that fade in and out at specific scroll points.
+• DOM Row: Add HTML content sections that appear over the 3D scene. Drag bars to set when they enter and exit.
+Use the + button on the left of each row to add items. Drag bar edges to resize timing. Drag bar bodies to reposition.
+
+CAMERA CONTROLS
+Two camera modes for different tasks:
+• Free Mode: Orbit, pan, and zoom freely to compose your shot. This is where you set up each keyframe.
+• Cinema Mode: Locks the camera to the interpolated path. Scrub the timeline to preview the exact scroll experience.
+• Spline Alpha: Adjust path tension — lower values give tighter curves, higher values give sweeping arcs.
+
+═══ CANVAS EDITOR ═══
+
+DOM SECTIONS OVERVIEW
+DOM Sections are HTML content cards that appear over the 3D canvas during the scroll. They're how you add text, calls to action, and storytelling elements to your experience.
+Think of it like compositing titles over video — the 3D scene is the backdrop, and your content floats over it.
+
+DIRECT CANVAS EDITING
+DOM sections are edited directly on the viewport — not in the sidebar. This is the same pattern used by Spline, Webflow, and Framer.
+• Click a section to select it. A selection outline and resize handles appear.
+• Drag the section body to reposition it anywhere on the canvas. Position is stored as viewport percentages.
+• Drag handles on the right edge, bottom edge, or corner to resize.
+• Double-click any text (headline, subheading, body) to edit it inline. Click away to save.
+• Click outside all sections to deselect.
+
+FLOATING PROPERTIES PANEL
+When a section is selected, a small floating panel appears near it with quick-access controls:
+• Card Style: Glass, Solid, Outline, or None — controls the card's visual treatment.
+• Font Variant: Display, Sans, Mono, or Serif — sets the typography style.
+• Colors: Text, background, and accent color pickers.
+• Opacity: Background opacity slider (hidden when card style is "none").
+• Delete: Red trash button to remove the section entirely.
+
+TIMING & SCROLL RANGE
+Each DOM section has a progress (entry) and exitProgress (exit) value. These control when the section is visible during the scroll.
+Set these by dragging the section's bar on the DOM row in the timeline. The left edge is entry, the right edge is exit.
+
+═══ OPTICS ═══
+
+CINEMATIC LENSES
+Control Depth of Field with precision. Use Aperture to expand the blur area and Focus Distance to hit your target.
+Pro Tip: Increase Bokeh Scale (up to 10) for high-end dreamlike backgrounds. Pair this with a low FOV for macro shots.
+
+FIELD OF VIEW
+Lower FOV (20-30) compresses space for a professional "product shot" look. Higher FOV (60-80) creates dynamic, fast-moving perspectives.
+
+═══ ATMOSPHERE ═══
+
+STUDIO LIGHTING
+Each chapter has an Environment Map. Presets like Studio, City, and Night provide fundamentally different reflection and lighting profiles.
+
+VOLUMETRIC FOG
+Fog density adds a sense of massive scale. Match the Fog Color to your background to create an infinite, seamless void.
+
+BACKGROUND & PAGE CHROME
+The Layout tab in the sidebar controls Page Chrome — the overall page appearance in the export:
+• Page Background Color: The color behind the 3D canvas.
+• Navigation Bar: Optional top bar with logo text, links, and customizable colors.
+• Footer: Optional bottom section with configurable text.
+• Scroll Indicator: Animated "scroll down" hint for the viewer.
+
+═══ VISUAL FX ═══
+
+VISUAL GRADE
+The final layer of fidelity:
+• Bloom: High-intensity light spill from emissive surfaces.
+• Scanlines & Grain: Adds an analog/technical texture to the digital render.
+• Camera Shake: Subtle procedural noise for handheld cinematic realism.
+• Vignette: Focuses the eye by darkening corners.
+
+═══ DISTRIBUTION ═══
+
+DIRECT-TO-WEB (ZIP)
+The Self-Contained Export is the fastest path to a live page. It bundles a custom vanilla JS engine — no React, no build step.
+• What's in the ZIP: index.html, project.json, ScrollyPipeline.js, and an optional assets/ folder.
+• Asset Strategy: Choose between embedding models as Base64 in the JSON (maximum portability) or keeping them as external .glb files (better performance).
+• Local Preview: Due to CORS, open the ZIP contents via a local server — npx serve . or VS Code Live Server.
+• Deploy: Upload the folder to Vercel, Netlify, or any static host. It works out of the box.
+
+REACT INTEGRATION (JSON)
+For existing React applications, export the Project JSON and feed it into the ScrollyEngine component:
+
+  import { ScrollyEngine } from './ScrollyEngine';
+  import data from './project.json';
+  export default function Page() {
+    return <ScrollyEngine data={data} />;
+  }
+
+Required packages: three, @react-three/fiber, @react-three/drei, @react-three/postprocessing
+
+WHAT GETS EXPORTED
+The export captures your complete scene:
+• Camera path with all keyframes and spline interpolation
+• DOM sections with free positioning (x/y/width/height as viewport %)
+• Story beats with fade-in/out timing
+• Post-processing settings (bloom, fog, DoF, vignette)
+• Page chrome (nav bar, footer, background, scroll indicator)
+• 3D model with environment and lighting`;
+
+    navigator.clipboard.writeText(allDocs).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
   };
 
   if (!showHandbook) return null;
