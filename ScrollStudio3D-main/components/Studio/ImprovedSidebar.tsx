@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useStore } from '../../useStore';
-import { StorySection } from '../../types';
+import { useStore, DEFAULT_PAGE_CHROME } from '../../useStore';
+import { StorySection, DOMSectionLayout, DOMSectionCardStyle, DOMSectionFontVariant } from '../../types';
 
 export const ImprovedSidebar: React.FC = () => {
   const {
