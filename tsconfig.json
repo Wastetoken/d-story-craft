@@ -11,8 +11,7 @@
     ],
     "skipLibCheck": true,
     "types": [
-      "node",
-      "@react-three/fiber"
+      "node"
     ],
     "moduleResolution": "bundler",
     "isolatedModules": true,
@@ -21,10 +20,13 @@
     "jsx": "react-jsx",
     "paths": {
       "@/*": [
-        "./*"
+        "./ScrollStudio3D-main/*"
       ]
     },
     "allowImportingTsExtensions": true,
-    "noEmit": true
-  }
+    "noEmit": true,
+    "strict": false,
+    "noImplicitAny": false
+  },
+  "include": ["ScrollStudio3D-main/**/*"]
 }
