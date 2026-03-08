@@ -368,12 +368,14 @@ export const useStore = create<StoreState & {
       const idx = c.domSections.findIndex(s => s.id === id);
       if (idx === -1) return c;
       const updatedSections = c.domSections.map(s => s.id === id ? { ...s, ...updates } : s);
-      // Re-sort if progress changed
-      if (updates.progress !== undefined) {
+      // Re-sort if progress changed, but only auto-recalc exitProgress if it wasn't explicitly set
+      if (updates.progress !== undefined && updates.exitProgress === undefined) {
         updatedSections.sort((a, b) => a.progress - b.progress);
         updatedSections.forEach((s, i) => {
           s.exitProgress = i < updatedSections.length - 1 ? updatedSections[i + 1].progress : 1.0;
         });
+      } else if (updates.progress !== undefined) {
+        updatedSections.sort((a, b) => a.progress - b.progress);
       }
       return { ...c, domSections: updatedSections };
     })
