@@ -518,7 +518,7 @@ export const INDEX_HTML_TEMPLATE = (projectData: any) => {
 
     <div id="app"></div>
 
-    <main style="position:relative;z-index:10;">
+    <main style="position:fixed;inset:0;z-index:10;pointer-events:none;">
       ${sectionsHtml}
     </main>
 
