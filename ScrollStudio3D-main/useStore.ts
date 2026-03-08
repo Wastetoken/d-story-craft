@@ -83,6 +83,7 @@ export const DEFAULT_PAGE_CHROME: PageChrome = {
   vignetteColor: '#000000',
   vignetteOpacity: 0.5,
   showScanlines: false,
+  scanlinesColor: '#000000',
   scanlinesOpacity: 0.1,
   showFooter: false,
   footerText: '',

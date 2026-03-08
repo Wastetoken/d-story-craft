@@ -416,7 +416,7 @@ export const INDEX_HTML_TEMPLATE = (projectData: any) => {
     <div style="position:fixed;inset:0;z-index:5;pointer-events:none;background:radial-gradient(circle, transparent 30%, rgba(${hexToRgb(chrome.vignetteColor || '#000000')}, ${chrome.vignetteOpacity ?? 0.5}) 100%);"></div>` : '';
 
   const scanlinesHtml = chrome.showScanlines ? `
-    <div style="position:fixed;inset:0;z-index:6;pointer-events:none;background:repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,${chrome.scanlinesOpacity ?? 0.1}) 2px, rgba(0,0,0,${chrome.scanlinesOpacity ?? 0.1}) 4px);"></div>` : '';
+    <div style="position:fixed;inset:0;z-index:6;pointer-events:none;background:repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(${hexToRgb(chrome.scanlinesColor || '#000000')},${chrome.scanlinesOpacity ?? 0.1}) 2px, rgba(${hexToRgb(chrome.scanlinesColor || '#000000')},${chrome.scanlinesOpacity ?? 0.1}) 4px);"></div>` : '';
 
   const footerHtml = chrome.showFooter ? `
     <footer style="position:relative;z-index:10;padding:3rem;text-align:center;color:${chrome.footerTextColor || '#888888'};background:${chrome.footerBackgroundColor || '#ffffff'};">${chrome.footerText || ''}</footer>` : '';

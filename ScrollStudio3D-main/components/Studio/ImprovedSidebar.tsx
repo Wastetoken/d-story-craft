@@ -803,7 +803,11 @@ const LayoutPageChromeSection: React.FC<{
               </button>
             </div>
             {chrome.showScanlines && (
-              <div className="pl-2 border-l border-white/10">
+              <div className="pl-2 border-l border-white/10 space-y-2">
+                <div>
+                  <div className="text-[10px] text-white/50 mb-1">Color</div>
+                  <input type="color" value={chrome.scanlinesColor} onChange={(e) => onUpdate({ scanlinesColor: e.target.value })} className="w-full h-6 bg-transparent border border-white/10 rounded cursor-pointer" />
+                </div>
                 <div className="flex justify-between text-[10px] text-white/50 mb-1">Opacity <span>{chrome.scanlinesOpacity.toFixed(2)}</span></div>
                 <input type="range" min="0" max="0.5" step="0.01" value={chrome.scanlinesOpacity} onChange={(e) => onUpdate({ scanlinesOpacity: parseFloat(e.target.value) })} className="w-full h-1 bg-white/10 rounded-full appearance-none accent-emerald-500" />
               </div>
