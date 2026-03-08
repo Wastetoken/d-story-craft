@@ -1,3 +1,11 @@
+import { FONT_VARIANT_MAP, LAYOUT_CSS_MAP } from '../../domSectionConstants';
+import { DOMSection, PageChrome, DOMSectionFontVariant } from '../../types';
+
+function hexToRgb(hex: string): string {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  if (!result) return '128, 128, 128';
+  return `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}`;
+}
 
 export const SCROLLY_PIPELINE_JS = `
 /**
@@ -39,11 +47,31 @@ class ScrollyPipeline {
     }
 
     await this.loadAllChapters();
+    this.setupDOMSections();
     this.setupScroll();
     this.onResize();
     window.addEventListener('resize', () => this.onResize());
     this.animate();
     this.update(0);
+  }
+
+  setupDOMSections() {
+    this.domSectionEls = [];
+    this.chapters.forEach(chapter => {
+      (chapter.domSections || []).forEach(section => {
+        const el = document.querySelector('[data-section-id="' + section.id + '"]');
+        if (!el) return;
+        const card = el.querySelector('.content-card');
+        this.domSectionEls.push({
+          card: card,
+          progress: section.progress,
+          exitProgress: section.exitProgress
+        });
+      });
+    });
+    this.domSectionEls.sort(function(a, b) { return a.progress - b.progress; });
+
+    this.progressBarEl = document.getElementById('scrolly-progress-bar') || null;
   }
 
   setupOverlay() {
@@ -304,6 +332,22 @@ class ScrollyPipeline {
         }
     });
 
+    // DOM sections
+    this.domSectionEls.forEach(function(item) {
+      if (!item.card) return;
+      var isActive = progress >= item.progress && progress < item.exitProgress;
+      if (isActive) {
+        item.card.classList.add('is-active');
+      } else {
+        item.card.classList.remove('is-active');
+      }
+    });
+
+    // Progress bar
+    if (this.progressBarEl) {
+      this.progressBarEl.style.width = (progress * 100) + '%';
+    }
+
     this.hotspotElements.forEach(h => {
         const distance = Math.abs(progress - h.visibleAt);
         const opacity = Math.max(0, Math.min(1, (0.08 - distance) * 20));
@@ -336,31 +380,121 @@ class ScrollyPipeline {
 window.ScrollyPipeline = ScrollyPipeline;
 `;
 
-export const INDEX_HTML_TEMPLATE = (projectName: string) => `<!DOCTYPE html>
+export const INDEX_HTML_TEMPLATE = (projectData: any) => {
+  const projectName = projectData.manifest?.projectName || 'ScrollStudio Export';
+  const chapters = projectData.chapters || [];
+  const chrome: PageChrome = chapters[0]?.pageChrome || {};
+
+  // Collect all DOM sections across chapters sorted by progress
+  const allSections: DOMSection[] = [];
+  chapters.forEach((ch: any) => {
+    (ch.domSections || []).forEach((s: DOMSection) => allSections.push(s));
+  });
+  allSections.sort((a, b) => a.progress - b.progress);
+
+  // Collect unique font variants used
+  const usedFonts = new Set<DOMSectionFontVariant>();
+  allSections.forEach(s => usedFonts.add(s.fontVariant));
+
+  const fontLinks = Array.from(usedFonts).map(v => {
+    const f = FONT_VARIANT_MAP[v];
+    return `<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=${f.googleFontUrl}&display=swap" rel="stylesheet">`;
+  }).join('\n    ');
+
+  const navHtml = chrome.showNav ? `
+    <nav style="position:fixed;top:0;left:0;right:0;z-index:50;padding:2rem 4rem;display:flex;justify-content:space-between;align-items:center;background:rgba(${hexToRgb(chrome.navBackgroundColor || '#ffffff')}, ${chrome.navBackgroundOpacity ?? 0});color:${chrome.navTextColor || '#888888'};pointer-events:auto;">
+      <span style="font-weight:bold;font-size:1.2rem;">${chrome.navTitle || ''}</span>
+    </nav>` : '';
+
+  const progressBarHtml = chrome.showProgressBar ? `
+    <div style="position:fixed;top:0;left:0;height:3px;z-index:60;background:${chrome.progressBarColor || '#888888'};width:0%;transition:width 0.1s;" id="scrolly-progress-bar"></div>` : '';
+
+  const noiseHtml = chrome.showNoiseOverlay ? `
+    <div style="position:fixed;inset:0;z-index:5;pointer-events:none;opacity:${chrome.noiseOpacity ?? 0.05};background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><filter id=%22n%22><feTurbulence baseFrequency=%220.7%22/></filter><rect width=%22512%22 height=%22512%22 filter=%22url(%23n)%22 opacity=%220.4%22/></svg>');background-size:256px;"></div>` : '';
+
+  const vignetteHtml = chrome.showVignette ? `
+    <div style="position:fixed;inset:0;z-index:5;pointer-events:none;background:radial-gradient(circle, transparent 30%, rgba(${hexToRgb(chrome.vignetteColor || '#000000')}, ${chrome.vignetteOpacity ?? 0.5}) 100%);"></div>` : '';
+
+  const scanlinesHtml = chrome.showScanlines ? `
+    <div style="position:fixed;inset:0;z-index:6;pointer-events:none;background:repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,${chrome.scanlinesOpacity ?? 0.1}) 2px, rgba(0,0,0,${chrome.scanlinesOpacity ?? 0.1}) 4px);"></div>` : '';
+
+  const footerHtml = chrome.showFooter ? `
+    <footer style="position:relative;z-index:10;padding:3rem;text-align:center;color:${chrome.footerTextColor || '#888888'};background:${chrome.footerBackgroundColor || '#ffffff'};">${chrome.footerText || ''}</footer>` : '';
+
+  const sectionsHtml = allSections.map(section => {
+    const font = FONT_VARIANT_MAP[section.fontVariant];
+    const layoutCss = LAYOUT_CSS_MAP[section.layout];
+
+    let cardBg = 'transparent';
+    let cardBorder = 'none';
+    let cardBackdrop = 'none';
+
+    if (section.cardStyle === 'glass') {
+      cardBg = `rgba(${hexToRgb(section.backgroundColor)}, ${section.backgroundOpacity})`;
+      cardBackdrop = 'blur(20px)';
+    } else if (section.cardStyle === 'solid') {
+      cardBg = `rgba(${hexToRgb(section.backgroundColor)}, ${section.backgroundOpacity})`;
+    } else if (section.cardStyle === 'outline') {
+      cardBorder = `2px solid ${section.accentColor}`;
+    }
+
+    const headlineHtml = section.headline ? `<h2 style="font-size:clamp(2rem,5vw,4rem);font-weight:${font.headingWeight};margin:0 0 0.5rem 0;line-height:1.1;color:${section.textColor};">${section.headline}</h2>` : '';
+    const subheadingHtml = section.subheading ? `<h3 style="font-size:clamp(1rem,2vw,1.5rem);font-weight:${font.bodyWeight};margin:0 0 0.75rem 0;opacity:0.8;color:${section.textColor};">${section.subheading}</h3>` : '';
+    const bodyHtml = section.bodyText ? `<p style="font-size:1rem;line-height:1.7;font-weight:${font.bodyWeight};opacity:0.7;color:${section.textColor};max-width:500px;">${section.bodyText}</p>` : '';
+    const buttonHtml = section.buttonLabel ? `<a href="${section.buttonUrl || '#'}" style="display:inline-block;margin-top:1.5rem;padding:0.75rem 2rem;background:${section.accentColor};color:${section.backgroundColor};font-size:0.85rem;font-weight:bold;text-decoration:none;border-radius:0.5rem;text-transform:uppercase;letter-spacing:0.05em;">${section.buttonLabel}</a>` : '';
+
+    return `
+      <section class="scrolly-section" data-section-id="${section.id}" style="display:flex;flex-direction:column;${layoutCss}">
+        <div class="content-card" style="max-width:550px;padding:2.5rem;border-radius:1.5rem;font-family:${font.fontFamily};background:${cardBg};border:${cardBorder};backdrop-filter:${cardBackdrop};opacity:0;transform:translateY(30px);transition:opacity 0.8s ease, transform 0.8s ease;">
+          ${headlineHtml}
+          ${subheadingHtml}
+          ${bodyHtml}
+          ${buttonHtml}
+        </div>
+      </section>`;
+  }).join('\n');
+
+  return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>\${projectName} • ScrollStudio Export</title>
+    <title>${projectName} • ScrollStudio Export</title>
+    ${fontLinks}
     <style>
-        body { margin: 0; background: #000; overflow-x: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: white; }
-        #app { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: ${chrome.pageBackgroundColor || '#ffffff'}; overflow-x: hidden; }
+        #app { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 0; pointer-events: none; }
+        .scrolly-section { position: relative; z-index: 10; min-height: 100vh; pointer-events: none; }
+        .content-card { pointer-events: auto; }
+        .content-card.is-active { opacity: 1 !important; transform: translateY(0) !important; }
     </style>
     <!-- Dependencies -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
-    <script src="ScrollyPipeline.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"><\/script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"><\/script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"><\/script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"><\/script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"><\/script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"><\/script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"><\/script>
+    <script src="ScrollyPipeline.js"><\/script>
 </head>
 <body>
+    ${progressBarHtml}
+    ${noiseHtml}
+    ${vignetteHtml}
+    ${scanlinesHtml}
+    ${navHtml}
+
     <div id="app"></div>
+
+    <main style="position:relative;z-index:10;">
+      ${sectionsHtml}
+    </main>
+
+    ${footerHtml}
+
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             try {
@@ -375,11 +509,12 @@ export const INDEX_HTML_TEMPLATE = (projectName: string) => `<!DOCTYPE html>
                 document.body.innerHTML = '<div style="padding:40px; text-align:center;"><h1>Failed to load project</h1><p>' + e.message + '</p></div>';
             }
         });
-    </script>
+    <\/script>
 </body>
 </html>`;
+};
 
-export const README_MD_TEMPLATE = (projectName: string) => `# \${projectName}
+export const README_MD_TEMPLATE = (projectName: string) => `# ${projectName}
 
 This is a self-contained scrollytelling experience exported from **ScrollStudio3D**.
 
