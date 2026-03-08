@@ -1,4 +1,4 @@
-import { FONT_VARIANT_MAP, LAYOUT_CSS_MAP } from '../../domSectionConstants';
+import { FONT_VARIANT_MAP } from '../../domSectionConstants';
 import { DOMSection, PageChrome, DOMSectionFontVariant } from '../../types';
 
 function hexToRgb(hex: string): string {
