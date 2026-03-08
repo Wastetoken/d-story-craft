@@ -80,6 +80,7 @@ export interface StoreState {
   selectedMeshName: string | null;
   cinematicBars: boolean;
   selectedKeyframeId: string | null;
+  selectedDOMSectionId: string | null;
   captureKeyframeTrigger: number;
 
   isTransitioning: boolean;
