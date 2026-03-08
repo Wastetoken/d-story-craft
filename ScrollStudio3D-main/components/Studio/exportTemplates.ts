@@ -2,7 +2,9 @@ import { FONT_VARIANT_MAP, LAYOUT_CSS_MAP } from '../../domSectionConstants';
 import { DOMSection, PageChrome, DOMSectionFontVariant } from '../../types';
 
 function hexToRgb(hex: string): string {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  let h = hex.replace(/^#/, '');
+  if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  const result = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);
   if (!result) return '128, 128, 128';
   return `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}`;
 }
