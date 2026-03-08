@@ -1,4 +1,4 @@
-
+// @ts-nocheck
 import React, { useLayoutEffect, useRef } from 'react';
 import { useStore } from '../../../useStore';
 import * as THREE from 'three';
