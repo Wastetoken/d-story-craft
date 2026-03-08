@@ -66,6 +66,10 @@ export const DEFAULT_DOM_SECTION: Omit<DOMSection, 'id' | 'progress' | 'exitProg
   textColor: '#888888',
   accentColor: '#000000',
   backgroundOpacity: 0.5,
+  verticalScroll: true,
+  horizontalScroll: false,
+  pin: false,
+  scrollDirection: 'vertical',
 };
 
 export const DEFAULT_PAGE_CHROME: PageChrome = {
@@ -113,6 +117,7 @@ export const useStore = create<StoreState & {
   transitionProgress: 0,
   selectedMeshName: null,
   selectedKeyframeId: null,
+  selectedDOMSectionId: null,
   captureKeyframeTrigger: 0,
   cinematicBars: false,
   isExporting: false,
@@ -142,6 +147,7 @@ export const useStore = create<StoreState & {
   setAudit: (audit) => set({ lastAudit: audit }),
   setSelectedMesh: (name) => set({ selectedMeshName: name, selectedKeyframeId: null }),
   setSelectedKeyframe: (id) => set({ selectedKeyframeId: id, selectedMeshName: null }),
+  setSelectedDOMSection: (id) => set({ selectedDOMSectionId: id }),
   triggerKeyframeCapture: () => set((state) => ({ captureKeyframeTrigger: state.captureKeyframeTrigger + 1 })),
   setCinematicBars: (active) => set({ cinematicBars: active }),
 
@@ -362,12 +368,14 @@ export const useStore = create<StoreState & {
       const idx = c.domSections.findIndex(s => s.id === id);
       if (idx === -1) return c;
       const updatedSections = c.domSections.map(s => s.id === id ? { ...s, ...updates } : s);
-      // Re-sort if progress changed
-      if (updates.progress !== undefined) {
+      // Re-sort if progress changed, but only auto-recalc exitProgress if it wasn't explicitly set
+      if (updates.progress !== undefined && updates.exitProgress === undefined) {
         updatedSections.sort((a, b) => a.progress - b.progress);
         updatedSections.forEach((s, i) => {
           s.exitProgress = i < updatedSections.length - 1 ? updatedSections[i + 1].progress : 1.0;
         });
+      } else if (updates.progress !== undefined) {
+        updatedSections.sort((a, b) => a.progress - b.progress);
       }
       return { ...c, domSections: updatedSections };
     })

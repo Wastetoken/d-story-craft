@@ -80,6 +80,7 @@ export interface StoreState {
   selectedMeshName: string | null;
   cinematicBars: boolean;
   selectedKeyframeId: string | null;
+  selectedDOMSectionId: string | null;
   captureKeyframeTrigger: number;
 
   isTransitioning: boolean;
@@ -106,6 +107,7 @@ export interface StoreState {
   setShowHandbook: (show: boolean) => void;
   setSelectedMesh: (name: string | null) => void;
   setSelectedKeyframe: (id: string | null) => void;
+  setSelectedDOMSection: (id: string | null) => void;
   triggerKeyframeCapture: () => void;
   setCinematicBars: (active: boolean) => void;
 
@@ -226,6 +228,11 @@ export interface DOMSection {
   textColor: string;
   accentColor: string;
   backgroundOpacity: number;
+
+  verticalScroll: boolean;
+  horizontalScroll: boolean;
+  pin: boolean;
+  scrollDirection: 'vertical' | 'horizontal';
 }
 
 export interface PageChrome {
