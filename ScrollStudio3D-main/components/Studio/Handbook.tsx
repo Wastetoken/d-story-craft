@@ -99,7 +99,7 @@ The Layout tab in the sidebar controls Page Chrome — the overall page appearan
 • Page Background Color: The color behind the 3D canvas.
 • Navigation Bar: Optional top bar with logo text, links, and customizable colors.
 • Footer: Optional bottom section with configurable text.
-• Scroll Indicator: Animated "scroll down" hint for the viewer.
+• Progress Bar: Optional colored bar at the top of the page that fills as the user scrolls.
 
 ═══ VISUAL FX ═══
 
