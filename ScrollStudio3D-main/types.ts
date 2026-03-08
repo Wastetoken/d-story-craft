@@ -3,6 +3,18 @@ export type Vector3Array = [number, number, number];
 export type QuaternionArray = [number, number, number, number];
 
 export type TransitionType = 'glitch' | 'flare' | 'blur' | 'fade' | 'none';
+
+export type DOMSectionLayout =
+  | 'left'
+  | 'right'
+  | 'center'
+  | 'bottom-left'
+  | 'bottom-right'
+  | 'bottom-center';
+
+export type DOMSectionCardStyle = 'glass' | 'solid' | 'outline' | 'none';
+
+export type DOMSectionFontVariant = 'display' | 'sans' | 'mono' | 'serif';
 export type EnvironmentPreset = 'studio' | 'city' | 'forest' | 'apartment' | 'night' | 'sunset';
 
 export interface TransitionConfig {
