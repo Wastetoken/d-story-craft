@@ -346,6 +346,25 @@ class ScrollyPipeline {
     this.domSectionEls.forEach(function(item) {
       if (!item.card) return;
       var isActive = progress >= item.progress && progress < item.exitProgress;
+
+      // Handle pinned sections - hold scroll progress within range
+      if (item.pin && isActive && item.el) {
+        item.el.style.position = 'sticky';
+        item.el.style.top = '0';
+      } else if (item.el) {
+        item.el.style.position = 'relative';
+        item.el.style.top = '';
+      }
+
+      // Handle horizontal scroll sections
+      if (item.horizontalScroll && isActive && item.el) {
+        item.el.style.overflowX = 'auto';
+        var localT = (progress - item.progress) / (item.exitProgress - item.progress);
+        if (item.el.scrollWidth > item.el.clientWidth) {
+          item.el.scrollLeft = localT * (item.el.scrollWidth - item.el.clientWidth);
+        }
+      }
+
       if (isActive) {
         item.card.classList.add('is-active');
       } else {

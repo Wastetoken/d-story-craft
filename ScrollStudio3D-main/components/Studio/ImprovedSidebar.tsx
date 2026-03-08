@@ -879,6 +879,15 @@ const LayoutDOMSectionsSection: React.FC<{
   onSeek: (progress: number) => void;
 }> = ({ sections, chapterId, onAdd, onRemove, onUpdate, onSeek }) => {
   const [open, setOpen] = useState(true);
+  const { selectedDOMSectionId, setSelectedDOMSection } = useStore();
+  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  // Auto-scroll to selected section
+  useEffect(() => {
+    if (selectedDOMSectionId && sectionRefs.current[selectedDOMSectionId]) {
+      sectionRefs.current[selectedDOMSectionId]?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [selectedDOMSectionId]);
 
   return (
     <div className="space-y-3">
@@ -897,7 +906,16 @@ const LayoutDOMSectionsSection: React.FC<{
           </button>
 
           {sections.map((section) => (
-            <div key={section.id} className="p-4 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 transition-all space-y-3">
+            <div
+              key={section.id}
+              ref={(el) => { sectionRefs.current[section.id] = el; }}
+              className={`p-4 rounded-2xl border transition-all space-y-3 ${
+                section.id === selectedDOMSectionId
+                  ? 'bg-amber-500/10 border-amber-500/50 ring-1 ring-amber-400/30'
+                  : 'bg-white/5 border-white/10 hover:bg-white/10'
+              }`}
+              onClick={() => setSelectedDOMSection(section.id)}
+            >
               {/* Progress Badge */}
               <div className="flex items-start justify-between">
                 <button
