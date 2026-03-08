@@ -17,7 +17,7 @@ const TutorialSection: React.FC<{ title: string; children: React.ReactNode; icon
 
 export const Handbook: React.FC = () => {
   const { showHandbook, setShowHandbook } = useStore();
-  const [activeTab, setActiveTab] = useState<'directing' | 'optics' | 'atmosphere' | 'fx' | 'distribution'>('directing');
+  const [activeTab, setActiveTab] = useState<'directing' | 'optics' | 'atmosphere' | 'fx' | 'canvas' | 'distribution'>('directing');
 
   if (!showHandbook) return null;
 
@@ -31,14 +31,14 @@ export const Handbook: React.FC = () => {
       <div className="relative w-full max-w-5xl max-h-[90vh] bg-[#0a0a0a] border border-zinc-800/50 rounded-[2.5rem] flex flex-col overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,1)] animate-in fade-in zoom-in-95 duration-500">
 
         {/* Header */}
-        <div className="p-10 border-b border-white/5 flex justify-between items-start bg-gradient-to-b from-white/[0.03] to-transparent">
+        <div className="shrink-0 p-10 border-b border-white/5 flex justify-between items-start bg-gradient-to-b from-white/[0.03] to-transparent">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
-              <div className="text-[9px] font-black uppercase tracking-[0.5em] text-zinc-500">System Documentation v3.0</div>
+              <div className="text-[9px] font-black uppercase tracking-[0.5em] text-zinc-500">System Documentation v4.0</div>
             </div>
             <h2 className="text-4xl font-black italic tracking-tighter text-white uppercase leading-none">ScrollStudio Manual</h2>
-            <p className="text-[10px] text-zinc-500 font-medium uppercase tracking-widest">Mastering the high-fidelity spatial narrative.</p>
+            <p className="text-[10px] text-zinc-500 font-medium uppercase tracking-widest">Mastering the high-fidelity spatial narrative engine.</p>
           </div>
           <button
             onClick={() => setShowHandbook(false)}
@@ -48,11 +48,12 @@ export const Handbook: React.FC = () => {
           </button>
         </div>
 
-        <div className="flex-1 overflow-hidden flex flex-col md:flex-row">
+        <div className="flex-1 min-h-0 flex flex-col md:flex-row">
           {/* Sidebar Navigation */}
-          <div className="w-full md:w-64 border-r border-white/5 p-6 space-y-2 bg-black/20 shrink-0">
+          <div className="w-full md:w-64 border-r border-white/5 p-6 space-y-2 bg-black/20 shrink-0 overflow-y-auto">
             {[
               { id: 'directing', label: 'Directing', icon: 'fa-video', desc: 'Paths & Timeline' },
+              { id: 'canvas', label: 'Canvas Editor', icon: 'fa-object-group', desc: 'DOM Sections' },
               { id: 'optics', label: 'Optics', icon: 'fa-circle-dot', desc: 'Lenses & Blur' },
               { id: 'atmosphere', label: 'Atmosphere', icon: 'fa-cloud-sun', desc: 'Light & Space' },
               { id: 'fx', label: 'Visual FX', icon: 'fa-wand-magic-sparkles', desc: 'The Final Grade' },
@@ -73,24 +74,72 @@ export const Handbook: React.FC = () => {
           </div>
 
           {/* Content Area */}
-          <div className="flex-1 overflow-y-auto p-12 no-scrollbar space-y-12 bg-gradient-to-br from-transparent to-white/[0.01]">
+          <div className="flex-1 min-h-0 overflow-y-auto p-12 space-y-12 bg-gradient-to-br from-transparent to-white/[0.01]">
 
             {activeTab === 'directing' && (
               <div className="space-y-10">
                 <TutorialSection title="Multi-Chapter System" icon="fa-layer-group">
-                  <p>Projects are organized into <b className="text-white italic">Chapters</b>. Each chapter can hold a unique 3D model, lighting rig, and narrative sequence.</p>
+                  <p>Projects are organized into <b className="text-white italic">Chapters</b>. Each chapter holds a unique 3D model, lighting rig, camera path, and narrative sequence.</p>
                   <ul className="list-disc pl-4 space-y-2">
-                    <li><b className="text-white">Auto-Distribute:</b> Automatically spans chapters across the total scroll progress.</li>
-                    <li><b className="text-white">Chapter Transitions:</b> Smooth cinematic flares trigger when moving between sectors.</li>
+                    <li><b className="text-white">Auto-Distribute:</b> Automatically spans chapters across the total scroll progress so they tile evenly.</li>
+                    <li><b className="text-white">Chapter Transitions:</b> Smooth cinematic flares trigger when the scroll crosses between chapters.</li>
+                    <li><b className="text-white">Independent Timelines:</b> Each chapter has its own keyframes, story beats, and DOM sections — fully self-contained.</li>
                   </ul>
                 </TutorialSection>
 
                 <TutorialSection title="Timeline & Keyframes" icon="fa-camera-retro">
-                  <p>Capture the camera's state at any point on the timeline. The engine performs <b className="text-white">Catmull-Rom Spline Interpolation</b> to build a smooth path.</p>
+                  <p>The timeline at the bottom of the studio has three rows:</p>
                   <ul className="list-disc pl-4 space-y-2">
-                    <li><b className="text-white">View Modes:</b> Toggling <b className="text-white">Cinema</b> lets you see the interpolated path, while <b className="text-white">Free</b> unlocks the editor camera.</li>
-                    <li><b className="text-white">Spline Alpha:</b> Adjust path tension from tight (Chordal) to sweeping (Centripetal).</li>
+                    <li><b className="text-white">Keyframes Row:</b> Capture camera positions at any scroll percentage. The engine builds a smooth <b className="text-white">Catmull-Rom Spline</b> between them.</li>
+                    <li><b className="text-white">Story Row:</b> Add narrative beats — full-screen text moments that fade in and out at specific scroll points.</li>
+                    <li><b className="text-white">DOM Row:</b> Add HTML content sections that appear over the 3D scene. Drag bars to set when they enter and exit.</li>
                   </ul>
+                  <p className="mt-2">Use the <b className="text-white">+</b> button on the left of each row to add items. Drag bar edges to resize timing. Drag bar bodies to reposition.</p>
+                </TutorialSection>
+
+                <TutorialSection title="Camera Controls" icon="fa-arrows-up-down-left-right">
+                  <p>Two camera modes for different tasks:</p>
+                  <ul className="list-disc pl-4 space-y-2">
+                    <li><b className="text-white">Free Mode:</b> Orbit, pan, and zoom freely to compose your shot. This is where you set up each keyframe.</li>
+                    <li><b className="text-white">Cinema Mode:</b> Locks the camera to the interpolated path. Scrub the timeline to preview the exact scroll experience.</li>
+                    <li><b className="text-white">Spline Alpha:</b> Adjust path tension — lower values give tighter curves, higher values give sweeping arcs.</li>
+                  </ul>
+                </TutorialSection>
+              </div>
+            )}
+
+            {activeTab === 'canvas' && (
+              <div className="space-y-10">
+                <TutorialSection title="DOM Sections Overview" icon="fa-object-group">
+                  <p>DOM Sections are HTML content cards that appear over the 3D canvas during the scroll. They're how you add text, calls to action, and storytelling elements to your experience.</p>
+                  <p>Think of it like compositing titles over video — the 3D scene is the backdrop, and your content floats over it.</p>
+                </TutorialSection>
+
+                <TutorialSection title="Direct Canvas Editing" icon="fa-hand-pointer">
+                  <p>DOM sections are edited directly on the viewport — not in the sidebar. This is the same pattern used by Spline, Webflow, and Framer.</p>
+                  <ul className="list-disc pl-4 space-y-2">
+                    <li><b className="text-white">Click</b> a section to select it. A selection outline and resize handles appear.</li>
+                    <li><b className="text-white">Drag</b> the section body to reposition it anywhere on the canvas. Position is stored as viewport percentages.</li>
+                    <li><b className="text-white">Drag handles</b> on the right edge, bottom edge, or corner to resize.</li>
+                    <li><b className="text-white">Double-click</b> any text (headline, subheading, body) to edit it inline. Click away to save.</li>
+                    <li><b className="text-white">Click outside</b> all sections to deselect.</li>
+                  </ul>
+                </TutorialSection>
+
+                <TutorialSection title="Floating Properties Panel" icon="fa-sliders">
+                  <p>When a section is selected, a small floating panel appears near it with quick-access controls:</p>
+                  <ul className="list-disc pl-4 space-y-2">
+                    <li><b className="text-white">Card Style:</b> Glass, Solid, Outline, or None — controls the card's visual treatment.</li>
+                    <li><b className="text-white">Font Variant:</b> Display, Sans, Mono, or Serif — sets the typography style.</li>
+                    <li><b className="text-white">Colors:</b> Text, background, and accent color pickers.</li>
+                    <li><b className="text-white">Opacity:</b> Background opacity slider (hidden when card style is "none").</li>
+                    <li><b className="text-white">Delete:</b> Red trash button to remove the section entirely.</li>
+                  </ul>
+                </TutorialSection>
+
+                <TutorialSection title="Timing & Scroll Range" icon="fa-clock">
+                  <p>Each DOM section has a <b className="text-white">progress</b> (entry) and <b className="text-white">exitProgress</b> (exit) value. These control when the section is visible during the scroll.</p>
+                  <p>Set these by dragging the section's bar on the <b className="text-white">DOM row</b> in the timeline. The left edge is entry, the right edge is exit.</p>
                 </TutorialSection>
               </div>
             )}
@@ -117,6 +166,16 @@ export const Handbook: React.FC = () => {
                 <TutorialSection title="Volumetric Fog" icon="fa-cloud">
                   <p>Fog density adds a sense of massive scale. Match the <b className="text-white">Fog Color</b> to your background to create an infinite, seamless void.</p>
                 </TutorialSection>
+
+                <TutorialSection title="Background & Page Chrome" icon="fa-palette">
+                  <p>The <b className="text-white">Layout tab</b> in the sidebar controls Page Chrome — the overall page appearance in the export:</p>
+                  <ul className="list-disc pl-4 space-y-2">
+                    <li><b className="text-white">Page Background Color:</b> The color behind the 3D canvas.</li>
+                    <li><b className="text-white">Navigation Bar:</b> Optional top bar with logo text, links, and customizable colors.</li>
+                    <li><b className="text-white">Footer:</b> Optional bottom section with configurable text.</li>
+                    <li><b className="text-white">Scroll Indicator:</b> Animated "scroll down" hint for the viewer.</li>
+                  </ul>
+                </TutorialSection>
               </div>
             )}
 
@@ -133,18 +192,41 @@ export const Handbook: React.FC = () => {
                 </TutorialSection>
               </div>
             )}
+
             {activeTab === 'distribution' && (
               <div className="space-y-10">
                 <TutorialSection title="Direct-to-Web (ZIP)" icon="fa-file-zipper">
-                  <p>The <b className="text-white">Self-Contained Export</b> is the fastest way to deploy. It includes a custom vanilla JS engine that doesn't require React.</p>
+                  <p>The <b className="text-white">Self-Contained Export</b> is the fastest path to a live page. It bundles a custom vanilla JS engine — no React, no build step.</p>
                   <ul className="list-disc pl-4 space-y-2">
-                    <li><b className="text-white">Assets Folder:</b> Your 3D models are bundled as separate files or embedded directly in the JSON.</li>
-                    <li><b className="text-white">Local Server:</b> Due to CORS security, you must use a local server (like Live Server or Python) to view the zip contents locally.</li>
+                    <li><b className="text-white">What's in the ZIP:</b> <code className="text-emerald-400">index.html</code>, <code className="text-emerald-400">project.json</code>, <code className="text-emerald-400">ScrollyPipeline.js</code>, and an optional <code className="text-emerald-400">assets/</code> folder.</li>
+                    <li><b className="text-white">Asset Strategy:</b> Choose between embedding models as Base64 in the JSON (maximum portability) or keeping them as external .glb files (better performance).</li>
+                    <li><b className="text-white">Local Preview:</b> Due to CORS, open the ZIP contents via a local server — <code className="text-emerald-400">npx serve .</code> or VS Code Live Server.</li>
+                    <li><b className="text-white">Deploy:</b> Upload the folder to Vercel, Netlify, or any static host. It works out of the box.</li>
                   </ul>
                 </TutorialSection>
 
-                <TutorialSection title="React Integration" icon="fa-code">
-                  <p>For existing React applications, use the <b className="text-white">JSON Export</b>. Simply feed the data into the <code className="text-emerald-400">ScrollyEngine</code> component.</p>
+                <TutorialSection title="React Integration (JSON)" icon="fa-code">
+                  <p>For existing React applications, export the <b className="text-white">Project JSON</b> and feed it into the <code className="text-emerald-400">ScrollyEngine</code> component:</p>
+                  <div className="bg-black/50 border border-white/10 rounded-xl p-4 mt-2 font-mono text-[10px] text-emerald-400 leading-relaxed">
+                    {`import { ScrollyEngine } from './ScrollyEngine';`}<br/>
+                    {`import data from './project.json';`}<br/><br/>
+                    {`export default function Page() {`}<br/>
+                    {`  return <ScrollyEngine data={data} />;`}<br/>
+                    {`}`}
+                  </div>
+                  <p className="mt-3">Required packages: <code className="text-emerald-400">three</code>, <code className="text-emerald-400">@react-three/fiber</code>, <code className="text-emerald-400">@react-three/drei</code>, <code className="text-emerald-400">@react-three/postprocessing</code></p>
+                </TutorialSection>
+
+                <TutorialSection title="What Gets Exported" icon="fa-list-check">
+                  <p>The export captures your complete scene:</p>
+                  <ul className="list-disc pl-4 space-y-2">
+                    <li>Camera path with all keyframes and spline interpolation</li>
+                    <li>DOM sections with free positioning (x/y/width/height as viewport %)</li>
+                    <li>Story beats with fade-in/out timing</li>
+                    <li>Post-processing settings (bloom, fog, DoF, vignette)</li>
+                    <li>Page chrome (nav bar, footer, background, scroll indicator)</li>
+                    <li>3D model with environment and lighting</li>
+                  </ul>
                 </TutorialSection>
               </div>
             )}
@@ -152,7 +234,7 @@ export const Handbook: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="p-10 border-t border-white/5 flex justify-center bg-black/40">
+        <div className="shrink-0 p-10 border-t border-white/5 flex justify-center bg-black/40">
           <button
             onClick={() => setShowHandbook(false)}
             className="px-12 py-4 bg-white text-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] hover:scale-105 active:scale-95 transition-all shadow-[0_20px_50px_rgba(255,255,255,0.1)] flex items-center gap-4"
