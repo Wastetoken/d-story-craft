@@ -19,7 +19,7 @@ export const Handbook: React.FC = () => {
   const { showHandbook, setShowHandbook } = useStore();
   const [activeTab, setActiveTab] = useState<'directing' | 'optics' | 'atmosphere' | 'fx' | 'canvas' | 'distribution'>('directing');
   const [copied, setCopied] = useState(false);
-  const cot handleCopyAll = () => {
+  const handleCopyAll = () => {
     const allDocs = `SCROLLSTUDIO MANUAL — FULL DOCUMENTATION
 
 ═══ DIRECTING ═══
