@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState'react';
 import { useStore } from '../../useStore';
 
 const TutorialSection: React.FC<{ title: string; children: React.ReactNode; icon: string }> = ({ title, children, icon }) => (
@@ -19,9 +19,7 @@ export const Handbook: React.FC = () => {
   const { showHandbook, setShowHandbook } = useStore();
   const [activeTab, setActiveTab] = useState<'directing' | 'optics' | 'atmosphere' | 'fx' | 'canvas' | 'distribution'>('directing');
   const [copied, setCopied] = useState(false);
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  const handleCopyAll = () => {
+  const cot handleCopyAll = () => {
     const allDocs = `SCROLLSTUDIO MANUAL — FULL DOCUMENTATION
 
 ═══ DIRECTING ═══
