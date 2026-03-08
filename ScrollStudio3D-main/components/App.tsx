@@ -32,7 +32,7 @@ const App: React.FC = () => {
   }, [mode, chapters, activeChapterId, currentProgress]);
 
   useEffect(() => {
-    const baseClass = mode === 'preview' ? 'preview-mode' : 'edit-mode';
+    const baseClass = landingMode ? '' : (mode === 'preview' ? 'preview-mode' : 'edit-mode');
     document.documentElement.className = baseClass;
     document.body.className = `${baseClass} ${isPlacingHotspot ? 'placing-hotspot' : ''}`.trim();
 
@@ -58,7 +58,7 @@ const App: React.FC = () => {
     }
 
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [mode, isPlacingHotspot, setLandingMode]);
+  }, [mode, isPlacingHotspot, setLandingMode, landingMode]);
 
   const glConfig = useMemo(() => ({
     antialias: true,
