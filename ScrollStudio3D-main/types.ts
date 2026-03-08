@@ -226,6 +226,11 @@ export interface DOMSection {
   textColor: string;
   accentColor: string;
   backgroundOpacity: number;
+
+  verticalScroll: boolean;
+  horizontalScroll: boolean;
+  pin: boolean;
+  scrollDirection: 'vertical' | 'horizontal';
 }
 
 export interface PageChrome {
