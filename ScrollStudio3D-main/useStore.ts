@@ -147,6 +147,7 @@ export const useStore = create<StoreState & {
   setAudit: (audit) => set({ lastAudit: audit }),
   setSelectedMesh: (name) => set({ selectedMeshName: name, selectedKeyframeId: null }),
   setSelectedKeyframe: (id) => set({ selectedKeyframeId: id, selectedMeshName: null }),
+  setSelectedDOMSection: (id) => set({ selectedDOMSectionId: id }),
   triggerKeyframeCapture: () => set((state) => ({ captureKeyframeTrigger: state.captureKeyframeTrigger + 1 })),
   setCinematicBars: (active) => set({ cinematicBars: active }),
 

@@ -107,6 +107,7 @@ export interface StoreState {
   setShowHandbook: (show: boolean) => void;
   setSelectedMesh: (name: string | null) => void;
   setSelectedKeyframe: (id: string | null) => void;
+  setSelectedDOMSection: (id: string | null) => void;
   triggerKeyframeCapture: () => void;
   setCinematicBars: (active: boolean) => void;
 
