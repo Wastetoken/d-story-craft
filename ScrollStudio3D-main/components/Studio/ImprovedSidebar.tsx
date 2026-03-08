@@ -415,7 +415,28 @@ export const ImprovedSidebar: React.FC = () => {
             </div>
           )}
 
-          {/* MATERIALS TAB */}
+          {/* LAYOUT TAB */}
+          {activeTab === 'layout' && (
+            <div className="space-y-6">
+              {/* Page Chrome Section */}
+              <LayoutPageChromeSection
+                chrome={activeChapter.pageChrome || DEFAULT_PAGE_CHROME}
+                onUpdate={(updates) => updatePageChrome(activeChapter.id, updates)}
+              />
+
+              {/* DOM Sections */}
+              <LayoutDOMSectionsSection
+                sections={activeChapter.domSections || []}
+                chapterId={activeChapter.id}
+                onAdd={() => addDOMSection(activeChapter.id)}
+                onRemove={removeDOMSection}
+                onUpdate={updateDOMSection}
+                onSeek={setCurrentProgress}
+              />
+            </div>
+          )}
+
+
           {activeTab === 'materials' && (
             <div className="space-y-6">
               <h3 className="text-sm font-bold text-white/90 uppercase tracking-wider">Material Editor</h3>
