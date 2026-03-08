@@ -203,6 +203,54 @@ export interface SceneConfig {
   envPreset: EnvironmentPreset;
 }
 
+export interface DOMSection {
+  id: string;
+  progress: number;
+  exitProgress: number;
+  layout: DOMSectionLayout;
+  cardStyle: DOMSectionCardStyle;
+  fontVariant: DOMSectionFontVariant;
+
+  headline: string;
+  subheading: string;
+  bodyText: string;
+  buttonLabel: string;
+  buttonUrl: string;
+
+  backgroundColor: string;
+  textColor: string;
+  accentColor: string;
+  backgroundOpacity: number;
+}
+
+export interface PageChrome {
+  showNav: boolean;
+  navTitle: string;
+  navTextColor: string;
+  navBackgroundColor: string;
+  navBackgroundOpacity: number;
+
+  pageBackgroundColor: string;
+
+  showProgressBar: boolean;
+  progressBarColor: string;
+
+  showNoiseOverlay: boolean;
+  noiseOpacity: number;
+
+  showVignette: boolean;
+  vignetteColor: string;
+  vignetteOpacity: number;
+
+  showScanlines: boolean;
+  scanlinesOpacity: number;
+
+  showFooter: boolean;
+  footerText: string;
+  footerTextColor: string;
+  footerBackgroundColor: string;
+}
+
 export interface SceneChapter {
   id: string;
   name: string;
@@ -215,6 +263,8 @@ export interface SceneChapter {
   narrativeBeats: StorySection[];
   spatialAnnotations: Hotspot[];
   materialOverrides: Record<string, MaterialOverride>;
+  domSections: DOMSection[];
+  pageChrome: PageChrome;
 }
 
 export type EngineMode = 'edit' | 'preview';
