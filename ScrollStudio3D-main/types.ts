@@ -248,6 +248,7 @@ export interface PageChrome {
   vignetteOpacity: number;
 
   showScanlines: boolean;
+  scanlinesColor: string;
   scanlinesOpacity: number;
 
   showFooter: boolean;
