@@ -325,7 +325,60 @@ export const useStore = create<StoreState & {
     })
   })),
 
-  updateMaterial: (meshName, updates) => set((state) => ({
+  addDOMSection: (chapterId) => set((state) => {
+    const chapter = state.chapters.find(c => c.id === chapterId);
+    if (!chapter) return state;
+    const id = Math.random().toString(36).substring(2, 9);
+    const newSection: DOMSection = {
+      ...DEFAULT_DOM_SECTION,
+      id,
+      progress: state.currentProgress,
+      exitProgress: 1.0,
+    };
+    const updatedSections = [...chapter.domSections, newSection].sort((a, b) => a.progress - b.progress);
+    // Recalculate exitProgress values
+    updatedSections.forEach((s, i) => {
+      s.exitProgress = i < updatedSections.length - 1 ? updatedSections[i + 1].progress : 1.0;
+    });
+    return {
+      chapters: state.chapters.map(c => c.id === chapterId ? { ...c, domSections: updatedSections } : c)
+    };
+  }),
+
+  removeDOMSection: (id) => set((state) => ({
+    chapters: state.chapters.map(c => {
+      const filtered = c.domSections.filter(s => s.id !== id);
+      // Recalculate exitProgress values
+      filtered.forEach((s, i) => {
+        s.exitProgress = i < filtered.length - 1 ? filtered[i + 1].progress : 1.0;
+      });
+      return { ...c, domSections: filtered };
+    })
+  })),
+
+  updateDOMSection: (id, updates) => set((state) => ({
+    chapters: state.chapters.map(c => {
+      const idx = c.domSections.findIndex(s => s.id === id);
+      if (idx === -1) return c;
+      const updatedSections = c.domSections.map(s => s.id === id ? { ...s, ...updates } : s);
+      // Re-sort if progress changed
+      if (updates.progress !== undefined) {
+        updatedSections.sort((a, b) => a.progress - b.progress);
+        updatedSections.forEach((s, i) => {
+          s.exitProgress = i < updatedSections.length - 1 ? updatedSections[i + 1].progress : 1.0;
+        });
+      }
+      return { ...c, domSections: updatedSections };
+    })
+  })),
+
+  updatePageChrome: (chapterId, updates) => set((state) => ({
+    chapters: state.chapters.map(c => c.id === chapterId
+      ? { ...c, pageChrome: { ...c.pageChrome, ...updates } }
+      : c)
+  })),
+
+
     chapters: state.chapters.map(c => {
       if (c.id !== state.activeChapterId) return c;
       const current = c.materialOverrides[meshName] || {
