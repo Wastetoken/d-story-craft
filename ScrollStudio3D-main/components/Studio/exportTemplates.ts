@@ -452,7 +452,6 @@ export const INDEX_HTML_TEMPLATE = (projectData: any) => {
 
   const sectionsHtml = allSections.map(section => {
     const font = FONT_VARIANT_MAP[section.fontVariant];
-    const layoutCss = LAYOUT_CSS_MAP[section.layout];
 
     let cardBg = 'transparent';
     let cardBorder = 'none';
@@ -473,14 +472,14 @@ export const INDEX_HTML_TEMPLATE = (projectData: any) => {
     const buttonHtml = section.buttonLabel ? `<a href="${section.buttonUrl || '#'}" style="display:inline-block;margin-top:1.5rem;padding:0.75rem 2rem;background:${section.accentColor};color:${section.backgroundColor};font-size:0.85rem;font-weight:bold;text-decoration:none;border-radius:0.5rem;text-transform:uppercase;letter-spacing:0.05em;">${section.buttonLabel}</a>` : '';
 
     return `
-      <section class="scrolly-section" data-section-id="${section.id}" style="display:flex;flex-direction:column;${layoutCss}">
-        <div class="content-card" style="max-width:550px;padding:2.5rem;border-radius:1.5rem;font-family:${font.fontFamily};background:${cardBg};border:${cardBorder};backdrop-filter:${cardBackdrop};opacity:0;transform:translateY(30px);transition:opacity 0.8s ease, transform 0.8s ease;">
+      <div class="dom-section" data-section-id="${section.id}" style="position:absolute;left:${section.x}%;top:${section.y}%;width:${section.width}%;min-height:${section.height || 40}%;">
+        <div class="content-card card-${section.cardStyle}" style="padding:2.5rem;border-radius:1.5rem;font-family:${font.fontFamily};background:${cardBg};border:${cardBorder};backdrop-filter:${cardBackdrop};opacity:0;transform:translateY(30px);transition:opacity 0.8s ease, transform 0.8s ease;">
           ${headlineHtml}
           ${subheadingHtml}
           ${bodyHtml}
           ${buttonHtml}
         </div>
-      </section>`;
+      </div>`;
   }).join('\n');
 
   return `<!DOCTYPE html>
