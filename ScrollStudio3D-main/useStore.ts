@@ -117,6 +117,7 @@ export const useStore = create<StoreState & {
   transitionProgress: 0,
   selectedMeshName: null,
   selectedKeyframeId: null,
+  selectedDOMSectionId: null,
   captureKeyframeTrigger: 0,
   cinematicBars: false,
   isExporting: false,
