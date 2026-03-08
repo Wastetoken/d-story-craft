@@ -136,7 +136,7 @@ The export captures your complete scene:
 • DOM sections with free positioning (x/y/width/height as viewport %)
 • Story beats with fade-in/out timing
 • Post-processing settings (bloom, fog, DoF, vignette)
-• Page chrome (nav bar, footer, background, scroll indicator)
+• Page chrome (nav bar, footer, background, progress bar)
 • 3D model with environment and lighting`;
 
     navigator.clipboard.writeText(allDocs).then(() => {
