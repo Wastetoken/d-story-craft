@@ -53,6 +53,43 @@ const DEFAULT_BEAT_STYLE: StorySectionStyle = {
   entryAnimation: 'fade-up'
 };
 
+export const DEFAULT_DOM_SECTION: Omit<DOMSection, 'id' | 'progress' | 'exitProgress'> = {
+  layout: 'left',
+  cardStyle: 'glass',
+  fontVariant: 'sans',
+  headline: '',
+  subheading: '',
+  bodyText: '',
+  buttonLabel: '',
+  buttonUrl: '',
+  backgroundColor: '#ffffff',
+  textColor: '#888888',
+  accentColor: '#000000',
+  backgroundOpacity: 0.5,
+};
+
+export const DEFAULT_PAGE_CHROME: PageChrome = {
+  showNav: true,
+  navTitle: '',
+  navTextColor: '#888888',
+  navBackgroundColor: '#ffffff',
+  navBackgroundOpacity: 0,
+  pageBackgroundColor: '#ffffff',
+  showProgressBar: false,
+  progressBarColor: '#888888',
+  showNoiseOverlay: false,
+  noiseOpacity: 0.05,
+  showVignette: false,
+  vignetteColor: '#000000',
+  vignetteOpacity: 0.5,
+  showScanlines: false,
+  scanlinesOpacity: 0.1,
+  showFooter: false,
+  footerText: '',
+  footerTextColor: '#888888',
+  footerBackgroundColor: '#ffffff',
+};
+
 export const useStore = create<StoreState & {
   autoDistributeChapters: () => void;
   duplicateChapter: (id: string) => void;
