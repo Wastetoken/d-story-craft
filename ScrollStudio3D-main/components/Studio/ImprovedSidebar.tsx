@@ -121,6 +121,7 @@ export const ImprovedSidebar: React.FC = () => {
             { id: 'environment', icon: 'fa-sun', label: 'Env' },
             { id: 'camera', icon: 'fa-video', label: 'Camera' },
             { id: 'story', icon: 'fa-book-open', label: 'Story' },
+            { id: 'layout', icon: 'fa-table-columns', label: 'Layout' },
             { id: 'materials', icon: 'fa-droplet', label: 'Mat' },
             { id: 'effects', icon: 'fa-sparkles', label: 'FX' },
           ].map((tab) => (
