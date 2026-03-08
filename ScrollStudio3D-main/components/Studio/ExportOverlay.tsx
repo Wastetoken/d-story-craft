@@ -52,7 +52,9 @@ export const ExportOverlay: React.FC = () => {
       },
       chapters: chapters.map(c => ({
         ...c,
-        modelUrl: !shouldEmbed ? `assets/chapter_${c.id}.glb` : c.modelUrl
+        modelUrl: !shouldEmbed ? `assets/chapter_${c.id}.glb` : c.modelUrl,
+        domSections: c.domSections || [],
+        pageChrome: c.pageChrome || {},
       })),
       embeddedAssets: shouldEmbed ? embeddedAssets : undefined
     };
