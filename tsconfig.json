@@ -11,15 +11,13 @@
     ],
     "skipLibCheck": true,
     "types": [
-      "node",
-      "@react-three/fiber"
+      "node"
     ],
     "moduleResolution": "bundler",
     "isolatedModules": true,
     "moduleDetection": "force",
     "allowJs": true,
     "jsx": "react-jsx",
-    "jsxImportSource": "@react-three/fiber",
     "paths": {
       "@/*": [
         "./ScrollStudio3D-main/*"
