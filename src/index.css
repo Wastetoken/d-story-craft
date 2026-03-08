@@ -101,5 +101,63 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
   }
+}
+
+/* ScrollStudio Styles */
+.glass-panel {
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.glowing-video-container {
+  position: relative;
+  isolation: isolate;
+  background-color: #000;
+  border-radius: 24px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1px;
+}
+
+.glowing-video-container::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  background: conic-gradient(from var(--angle, 0deg), transparent 0%, #fff 15%, transparent 20%);
+  border-radius: inherit;
+  animation: rotate-glow 4s linear infinite;
+  z-index: -1;
+}
+
+.glowing-video-container::after {
+  content: '';
+  position: absolute;
+  inset: -15px;
+  background: conic-gradient(from var(--angle, 0deg), transparent 0%, #fff 15%, transparent 20%);
+  border-radius: inherit;
+  filter: blur(20px);
+  opacity: 0.5;
+  animation: rotate-glow 4s linear infinite;
+  z-index: -2;
+}
+
+@keyframes rotate-glow {
+  to { --angle: 360deg; }
 }
