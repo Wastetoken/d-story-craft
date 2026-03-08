@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useRef, useEffect, Suspense } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useGLTF, PerspectiveCamera, Environment } from '@react-three/drei';

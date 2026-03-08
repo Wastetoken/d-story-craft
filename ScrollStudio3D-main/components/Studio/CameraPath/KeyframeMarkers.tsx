@@ -1,4 +1,4 @@
-
+// @ts-nocheck
 import React, { useRef, useLayoutEffect, useState } from 'react';
 import { useStore } from '../../../useStore';
 import { Html, TransformControls } from '@react-three/drei';

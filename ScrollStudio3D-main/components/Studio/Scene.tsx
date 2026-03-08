@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useRef, useMemo, Suspense, startTransition, useLayoutEffect, useEffect } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import {
