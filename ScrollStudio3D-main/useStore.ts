@@ -66,6 +66,10 @@ export const DEFAULT_DOM_SECTION: Omit<DOMSection, 'id' | 'progress' | 'exitProg
   textColor: '#888888',
   accentColor: '#000000',
   backgroundOpacity: 0.5,
+  verticalScroll: true,
+  horizontalScroll: false,
+  pin: false,
+  scrollDirection: 'vertical',
 };
 
 export const DEFAULT_PAGE_CHROME: PageChrome = {
