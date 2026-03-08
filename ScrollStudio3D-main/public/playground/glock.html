@@ -1,346 +1,1437 @@
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>G19 | MONOCHROME BALLISTICS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&family=JetBrains+Mono:wght@400;700&display=swap"
         rel="stylesheet">
     <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         :root {
-            --bg-color: #050505;
-            --accent-color: #ffffff;
-            --text-muted: #666666;
+            --bg: #040404;
+            --fg: #f0f0f0;
+            --muted: #444;
+            --accent: #c8f0c8;
+        }
+
+        html {
+            scroll-behavior: auto;
+        }
+
+        /* KILL SCROLL MEMORY */
+        html,
+        body {
+            scroll-behavior: auto !important;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--accent-color);
-            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            font-family: 'Space Grotesk', sans-serif;
             overflow-x: hidden;
+            opacity: 0;
         }
 
         .mono {
             font-family: 'JetBrains Mono', monospace;
         }
 
-        .clip-text {
-            -webkit-background-clip: text;
-            background-clip: text;
+        /* ── FIXED VIEWER LAYER ─────────────────────────────────────────── */
+        #viewer-wrap {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
         }
 
         model-viewer {
-            width: 100%;
-            height: 100vh;
-            background-color: transparent;
-            --poster-color: transparent;
-        }
-
-        .hotspot {
-            background: #fff;
-            border-radius: 50%;
-            border: none;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-            height: 12px;
-            width: 12px;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            position: relative;
-        }
-
-        .hotspot:hover {
-            transform: scale(1.5);
-        }
-
-        .hotspot-annotation {
-            background: rgba(10, 10, 10, 0.85);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-left: 3px solid #fff;
-            padding: 1rem;
-            width: 200px;
             position: absolute;
-            top: 20px;
-            left: 20px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .hotspot[data-active="true"] .hotspot-annotation {
-            opacity: 1;
-        }
-
-        .scrolly-section {
-            height: 100vh;
-            position: relative;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            pointer-events: none;
-        }
-
-        .content-card {
-            max-width: 450px;
-            padding: 2rem;
-            pointer-events: all;
-        }
-
-        .progress-bar {
-            position: fixed;
-            left: 40px;
-            top: 50%;
-            transform: translateY(-50%);
-            height: 200px;
-            width: 2px;
-            background: rgba(255, 255, 255, 0.1);
-            z-index: 50;
-        }
-
-        .progress-fill {
+            inset: 0;
             width: 100%;
-            height: 0%;
-            background: #fff;
+            height: 100%;
+            background: transparent;
+            --poster-color: transparent;
+            pointer-events: none;
+        }
+
+        #mv-carbon {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* ── HUD ────────────────────────────────────────────────────────── */
+        .scanline {
+            position: fixed;
+            inset-inline: 0;
+            height: 1px;
+            background: rgba(200, 240, 200, 0.04);
+            pointer-events: none;
+            z-index: 3;
+            animation: scan 9s linear infinite;
+        }
+
+        @keyframes scan {
+            from {
+                top: -1px;
+            }
+
+            to {
+                top: 100vh;
+            }
         }
 
         .vignette {
             position: fixed;
             inset: 0;
-            background: radial-gradient(circle, transparent 20%, rgba(0, 0, 0, 0.8) 100%);
+            background: radial-gradient(ellipse at 50% 40%, transparent 28%, rgba(0, 0, 0, 0.88) 100%);
             pointer-events: none;
-            z-index: 5;
+            z-index: 2;
         }
 
-        .scanline {
+        .corner {
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            pointer-events: none;
+            z-index: 8;
+        }
+
+        .corner::before,
+        .corner::after {
+            content: '';
+            position: absolute;
+            background: rgba(200, 240, 200, 0.25);
+        }
+
+        .corner::before {
             width: 100%;
             height: 1px;
-            background: rgba(255, 255, 255, 0.05);
-            position: fixed;
             top: 0;
-            z-index: 6;
-            animation: scan 8s linear infinite;
+            left: 0;
         }
 
-        @keyframes scan {
-            0% {
-                top: 0;
+        .corner::after {
+            width: 1px;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .c-tl {
+            top: 20px;
+            left: 20px;
+        }
+
+        .c-tr {
+            top: 20px;
+            right: 20px;
+            transform: scaleX(-1);
+        }
+
+        .c-bl {
+            bottom: 20px;
+            left: 20px;
+            transform: scaleY(-1);
+        }
+
+        .c-br {
+            bottom: 20px;
+            right: 20px;
+            transform: scale(-1);
+        }
+
+        /* ── NAV ────────────────────────────────────────────────────────── */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            mix-blend-mode: difference;
+        }
+
+        .nav-logo {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-logo sup {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 0.15em;
+            opacity: 0.4;
+            vertical-align: super;
+            margin-left: 6px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 0.15em;
+        }
+
+        .nav-links a {
+            color: inherit;
+            text-decoration: none;
+            opacity: 0.4;
+            transition: opacity 0.2s;
+        }
+
+        .nav-links a:hover {
+            opacity: 1;
+            text-decoration: line-through;
+        }
+
+        .nav-cta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 0.15em;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background: none;
+            color: inherit;
+            padding: 0.45rem 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-cta:hover {
+            background: white;
+            color: black;
+            border-color: white;
+        }
+
+        /* ── PROGRESS BAR ───────────────────────────────────────────────── */
+        .prog-track {
+            position: fixed;
+            left: 22px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.07);
+            z-index: 20;
+        }
+
+        .prog-fill {
+            width: 100%;
+            height: 0%;
+            background: var(--accent);
+        }
+
+        .prog-label {
+            position: absolute;
+            bottom: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            color: rgba(255, 255, 255, 0.2);
+            white-space: nowrap;
+        }
+
+        /* ── FLOATING PILLS ─────────────────────────────────────────────── */
+        .pill-wrap {
+            position: fixed;
+            pointer-events: none;
+            z-index: 4;
+            will-change: transform;
+        }
+
+        .pill {
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 0.18em;
+            color: rgba(200, 240, 200, 0.3);
+            background: rgba(200, 240, 200, 0.03);
+            border: 1px solid rgba(200, 240, 200, 0.08);
+            padding: 0.4rem 0.9rem;
+            border-radius: 999px;
+        }
+
+        /* ── HOTSPOT DOTS ───────────────────────────────────────────────── */
+        /*DOT-ONLY buttons inside model-viewer slots.
+  Annotation is in a separate #hs-panel.
+  Positioned by JS via getBoundingClientRect() on the active dot.
+*/
+        .hs-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: none;
+            background: var(--accent);
+            cursor: pointer;
+            padding: 0;
+            outline: none;
+            transition: transform 0.2s ease;
+            box-shadow: 0 0 8px rgba(200, 240, 200, 0.4);
+        }
+
+        .hs-dot:hover {
+            transform: scale(1.6);
+        }
+
+        .hs-dot.active {
+            transform: scale(1.4);
+            animation: dot-pulse 2s ease-out infinite;
+        }
+
+        @keyframes dot-pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 3px rgba(200, 240, 200, 0.15), 0 0 16px rgba(200, 240, 200, 0.5);
             }
 
-            100% {
-                top: 100%;
+            50% {
+                box-shadow: 0 0 0 8px rgba(200, 240, 200, 0.03), 0 0 24px rgba(200, 240, 200, 0.3);
             }
+        }
+
+        /* ── HOTSPOT ANNOTATION PANEL ───────────────────────────────────── */
+        #hs-panel {
+            position: fixed;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0;
+            transition: opacity 0.22s ease;
+            transform: translateY(-50%);
+        }
+
+        #hs-panel.visible {
+            opacity: 1;
+        }
+
+        .hs-inner {
+            background: rgba(4, 4, 4, 0.93);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(200, 240, 200, 0.12);
+            border-left: 2px solid var(--accent);
+            padding: 1rem 1.25rem;
+            width: 220px;
+        }
+
+        .hs-inner h4 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+
+        .hs-inner p {
+            font-size: 11px;
+            color: #777;
+            line-height: 1.55;
+        }
+
+        /* ── SCROLL CONTENT ─────────────────────────────────────────────── */
+        main {
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: flex-end;
+            padding: 0 4rem 5rem 5rem;
+            pointer-events: none;
+        }
+
+        .hero-title {
+            font-size: clamp(4.5rem, 11vw, 12rem);
+            font-weight: 700;
+            letter-spacing: -0.05em;
+            line-height: 0.85;
+            text-transform: uppercase;
+            opacity: 0.06;
+            user-select: none;
+        }
+
+        .hero-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 0.22em;
+            color: var(--muted);
+            margin-top: 1.5rem;
+            line-height: 2;
+        }
+
+        .step {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 3.5rem;
+            pointer-events: none;
+        }
+
+        .step.right {
+            justify-content: flex-end;
+        }
+
+        .explode-section {
+            height: 400vh;
+            position: relative;
+        }
+
+        .explode-sticky {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 3.5rem;
+            pointer-events: none;
+        }
+
+        .shot-section {
+            height: 200vh;
+            position: relative;
+        }
+
+        .shot-sticky {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-left: 3.5rem;
+            pointer-events: none;
+        }
+
+        .card {
+            max-width: 420px;
+            padding: 2rem 2.25rem;
+            pointer-events: all;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(12px);
+            position: relative;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            width: 28px;
+            height: 2px;
+            background: var(--accent);
+        }
+
+        .card-eye {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 0.22em;
+            color: var(--muted);
+            display: block;
+            margin-bottom: 0.9rem;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        .card-title {
+            font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            text-transform: uppercase;
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+
+        .card-body {
+            font-size: 12px;
+            color: #777;
+            line-height: 1.75;
+            margin-bottom: 1rem;
+        }
+
+        .tags {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 0.1em;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.4);
+            padding: 0.3rem 0.75rem;
+        }
+
+        .list-items {
+            list-style: none;
+        }
+
+        .list-items li {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 0.12em;
+            color: var(--muted);
+            padding: 0.18rem 0;
+        }
+
+        .divider {
+            width: 2.5rem;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin-top: 1rem;
+        }
+
+        .xfade-section {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 3.5rem;
+            pointer-events: none;
+        }
+
+        .xfade-card {
+            text-align: center;
+            max-width: 480px;
+            pointer-events: all;
+        }
+
+        .xfade-card .card-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+        }
+
+        .end-section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            pointer-events: all;
+        }
+
+        .end-title {
+            font-size: clamp(3rem, 8vw, 9rem);
+            font-weight: 700;
+            letter-spacing: -0.05em;
+            text-transform: uppercase;
+            line-height: 0.88;
+            margin-bottom: 3rem;
+            opacity: 0.8;
+        }
+
+        .end-btn {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 0.2em;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: none;
+            color: var(--fg);
+            padding: 1rem 3rem;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .end-btn:hover {
+            background: white;
+            color: black;
+        }
+
+        footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 1.5rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            color: rgba(255, 255, 255, 0.12);
+        }
+
+        /* Explode / slide HUD labels */
+        #explode-label,
+        #slide-label {
+            position: fixed;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 0.2em;
+            color: var(--accent);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        #explode-label {
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+
+        #slide-label {
+            right: 3rem;
+            top: 50%;
+            transform: translateY(-50%);
+            text-align: right;
+            line-height: 1.9;
+        }
+
+        #explode-label.on,
+        #slide-label.on {
+            opacity: 0.55;
+        }
+
+        /* ── BOKEH & FLASH ─────────────────────────────────────────────── */
+        #bokeh-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 5;
+            pointer-events: none;
+            backdrop-filter: blur(0px);
+            opacity: 0;
+            transition: opacity 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        #flash-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: #fff;
+            pointer-events: none;
+            opacity: 0;
+            mix-blend-mode: overlay;
+        }
+
+        .cinematic-vignette {
+            position: fixed;
+            inset: 0;
+            z-index: 2;
+            background: radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.95) 100%);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.2s ease;
+        }
+
+        .cinematic-vignette.active {
+            opacity: 1;
         }
     </style>
 </head>
 
-<body class="antialiased">
-    <a href="index.html"
-        style="position: fixed; top: 20px; left: 20px; z-index: 9999; padding: 10px 20px; background-color: rgba(0,0,0,0.7); color: white; text-decoration: none; border: 1px solid rgba(255,255,255,0.2); border-radius: 30px; font-family: sans-serif; font-size: 14px; backdrop-filter: blur(5px); text-transform: uppercase; letter-spacing: 2px; transition: all 0.3s ease;">
-        &larr; Back
-    </a>
+<body>
 
     <div class="scanline"></div>
     <div class="vignette"></div>
+    <div class="corner c-tl"></div>
+    <div class="corner c-tr"></div>
+    <div class="corner c-bl"></div>
+    <div class="corner c-br"></div>
 
-    <nav class="fixed top-0 w-full p-8 flex justify-between items-center z-[100] mix-blend-difference">
-        <div class="flex items-baseline space-x-2">
-            <span class="text-2xl font-black tracking-tighter">GLOCK 19</span>
-            <span class="mono text-[10px] opacity-50 uppercase tracking-[0.2em]">Gen 4 Series</span>
-        </div>
-        <div class="mono text-[10px] space-x-8 hidden md:flex">
-            <a href="#" class="hover:line-through">SPECIFICATIONS</a>
-            <a href="#" class="hover:line-through">ENGINEERING</a>
-            <a href="#" class="hover:line-through">MANUFACTURING</a>
-        </div>
-        <button
-            class="border border-white/20 px-6 py-2 text-[10px] mono hover:bg-white hover:text-black transition-all">
-            CAD ACCESS
-        </button>
-    </nav>
+    <div id="bokeh-layer"></div>
+    <div id="flash-overlay"></div>
+    <div class="cinematic-vignette" id="cinema-vignette"></div>
 
-    <div class="progress-bar">
-        <div class="progress-fill" id="p-fill"></div>
+    <div class="prog-track">
+        <div class="prog-fill" id="prog-fill"></div>
+        <span class="prog-label" id="prog-label">01</span>
     </div>
 
-    <div class="fixed inset-0 z-0">
-        <model-viewer id="g19-viewer"
-            src="https://pub-a56d70d158b1414d83c3856ea210601c.r2.dev/uploads_files_6208085_Glock%2B21-S1.glb"
-            camera-controls auto-rotate-delay="0" shadow-intensity="2" environment-image="neutral" exposure="0.8"
-            interaction-prompt="none" camera-orbit="45deg 75deg 2m" min-field-of-view="25deg" bounds="tight">
+    <nav>
+        <div class="nav-logo">GLOCK 21<sup>GEN IV</sup></div>
+        <div class="nav-links">
+            <a href="#">SPEC</a><a href="#">ENGINEERING</a><a href="#">CARBON</a>
+        </div>
+        <button class="nav-cta">CAD ACCESS</button>
+    </nav>
 
-            <button class="hotspot" slot="hotspot-slide" data-position="0.02m 0.1m 0.05m" data-normal="0 0 1"
-                data-visibility-attribute="visible">
-                <div class="hotspot-annotation">
-                    <h3 class="mono text-xs font-bold mb-1">NITRITE SLIDE</h3>
-                    <p class="text-[10px] text-zinc-400">Tenifer-treated steel for maximum surface hardness and
-                        corrosion resistance.</p>
-                </div>
-            </button>
+    <!-- Floating spec pills -->
+    <div class="pill-wrap" id="p1" style="top:14%;left:7%;"><span class="pill">9MM PARABELLUM</span></div>
+    <div class="pill-wrap" id="p2" style="top:26%;right:9%;"><span class="pill">670G UNLOADED</span></div>
+    <div class="pill-wrap" id="p3" style="bottom:24%;left:11%;"><span class="pill">15+1 CAPACITY</span></div>
+    <div class="pill-wrap" id="p4" style="top:44%;left:4%;"><span class="pill">5.5 LB TRIGGER</span></div>
+    <div class="pill-wrap" id="p5" style="bottom:14%;right:6%;"><span class="pill">SAFE ACTION</span></div>
+    <div class="pill-wrap" id="p6" style="top:8%;right:14%;"><span class="pill">GEN4 RTF FRAME</span></div>
+    <div class="pill-wrap" id="p7" style="bottom:40%;left:17%;"><span class="pill">MIL-STD RAIL</span></div>
+    <div class="pill-wrap" id="p8" style="top:55%;right:5%;"><span class="pill">.45 ACP S1 MOD</span></div>
 
-            <button class="hotspot" slot="hotspot-trigger" data-position="0.02m 0.04m -0.05m" data-normal="0 0 1"
-                data-visibility-attribute="visible">
-                <div class="hotspot-annotation">
-                    <h3 class="mono text-xs font-bold mb-1">SAFE ACTION</h3>
-                    <p class="text-[10px] text-zinc-400">Three independent mechanical safety systems operating
-                        sequentially.</p>
-                </div>
-            </button>
+    <!-- 3D Viewer layer -->
+    <div id="viewer-wrap">
 
-            <button class="hotspot" slot="hotspot-grip" data-position="0.02m -0.08m -0.05m" data-normal="0 0 1"
-                data-visibility-attribute="visible">
-                <div class="hotspot-annotation">
-                    <h3 class="mono text-xs font-bold mb-1">RTF TEXTURE</h3>
-                    <p class="text-[10px] text-zinc-400">Rough Textured Frame designed for optimal friction in adverse
-                        conditions.</p>
-                </div>
-            </button>
+        <!-- MODEL: Glock 19 Gen 4 -->
+        <model-viewer id="mv-carbon" src="https://pub-a56d70d158b1414d83c3856ea210601c.r2.dev/guns/Glock-Carbon.gltf"
+            camera-controls auto-rotate-delay="99999" shadow-intensity="2" environment-image="neutral" exposure="2.0"
+            interaction-prompt="none" camera-orbit="45deg 80deg 450%" field-of-view="45deg">
+
+            <!--Dot-only hotspot buttons. Annotation is in #hs-panel (main DOM).
+      data-label-* are read by JS to populate the panel when this dot is active.
+      data-position values below are in model-viewer's normalized meter space.
+      The Glock 19 Gen 4 model's coordinate system (from bone data):
+        Barrel bone at Body-local (-1.14, 2.86, 0.007) → toward muzzle/top
+        Mag bone at (5.13, -2.96, -0.019) → down/toward butt
+        Slide_1 at (-0.98, -3.56, 0.02) → rear/down
+      model-viewer normalizes bounds="tight" so the gun fills the canvas.
+      Approximate normalized positions below — tweak visually if needed.-->
+            <button class="hs-dot" slot="hs-slide" data-position="-0.02m 0.05m 0.005m" data-normal="0 1 0"
+                data-visibility-attribute="visible" data-title="NITRIDE SLIDE"
+                data-body="102mm CNC-milled, Tenifer finish. 64 HRC hardness."></button>
+
+            <button class="hs-dot" slot="hs-barrel" data-position="0.08m 0.02m 0.005m" data-normal="1 0 0"
+                data-visibility-attribute="visible" data-title="POLYGONAL BARREL"
+                data-body="Hammer-forged hexagonal rifling. 5–10% velocity gain."></button>
+
+            <button class="hs-dot" slot="hs-trigger" data-position="0.005m -0.022m 0.01m" data-normal="0 0 1"
+                data-visibility-attribute="visible" data-title="SAFE ACTION TRIGGER"
+                data-body="3 safeties, 5.5 lb pull, 12.5mm travel. No external safety."></button>
+
+            <button class="hs-dot" slot="hs-frame" data-position="-0.01m -0.04m 0.015m" data-normal="0 -1 0"
+                data-visibility-attribute="visible" data-title="POLYMER FRAME"
+                data-body="High-impact RTF Gen4. Recoil-absorbing, modular backstraps."></button>
+
+            <button class="hs-dot" slot="hs-mag" data-position="-0.01m -0.065m 0m" data-normal="0 -1 0"
+                data-visibility-attribute="visible" data-title="DOUBLE-STACK MAG"
+                data-body="15+1 capacity. Steel-lined polymer, drop-free, orange follower."></button>
+
+            <button class="hs-dot" slot="hs-rail" data-position="0.035m -0.025m 0m" data-normal="0 -1 0"
+                data-visibility-attribute="visible" data-title="PICATINNY RAIL"
+                data-body="MIL-STD-1913. Tested to 200g+ accessories without flex."></button>
+
+            <button class="hs-dot" slot="hs-spring" data-position="0.05m 0.01m 0m" data-normal="1 0 0"
+                data-visibility-attribute="visible" data-title="RECOIL SPRING"
+                data-body="Dual-captive Gen4 assembly. 10,000+ round service life."></button>
+
+            <button class="hs-dot" slot="hs-slidelock" data-position="0.01m 0.01m -0.012m" data-normal="0 0 -1"
+                data-visibility-attribute="visible" data-title="SLIDE LOCK"
+                data-body="Ambidextrous laser-cut steel. Essential for field stripping."></button>
+
+            <button class="hs-dot" slot="hs-magrelease" data-position="0.02m -0.01m -0.015m" data-normal="0 0 -1"
+                data-visibility-attribute="visible" data-title="MAGAZINE RELEASE"
+                data-body="Enlarged Gen4 profile. Reversible for left-handed shooters."></button>
+
         </model-viewer>
     </div>
 
-    <main class="relative z-10">
-        <section class="h-screen flex items-center px-12 md:px-24">
-            <div class="max-w-4xl">
-                <h1 class="text-[12vw] leading-[0.85] font-black tracking-tighter uppercase mb-4 opacity-10">PRECISION
-                </h1>
-                <p class="mono text-xs tracking-widest text-zinc-500 max-w-md">
-                    [001] MECHANICAL NARRATIVE <br>
-                    HIGH-FIDELITY BALLISTIC ANALYSIS <br>
-                    VER: 19.4.08
+    <!-- Annotation panel — single shared panel, repositioned by JS -->
+    <div id="hs-panel">
+        <div class="hs-inner">
+            <h4 id="hs-title"></h4>
+            <p id="hs-body"></p>
+        </div>
+    </div>
+
+    <!-- HUD labels -->
+    <div id="explode-label">SCROLL TO DISASSEMBLE ↓</div>
+    <div id="slide-label" class="mono">SLIDE CYCLE<br>─ BOLT TRAVEL<br>─ CASE EJECT<br>─ SPRING RESET</div>
+
+    <!-- ═════════════════════════════════════════════
+     SCROLL CONTENT
+════════════════════════════════════════════════ -->
+    <main>
+
+        <section class="hero">
+            <div>
+                <h1 class="hero-title">BALLISTICS</h1>
+                <p class="hero-meta">
+                    [001] MECHANICAL NARRATIVE — CARBON SERIES<br>
+                    HIGH-FIDELITY COMPONENT ANALYSIS<br>
+                    REV 4.08 // MONOCHROME SYSTEMS
                 </p>
             </div>
         </section>
 
-        <section class="scrolly-section px-12 md:px-24" id="step-1">
-            <div class="content-card">
-                <span class="mono text-xs text-zinc-500 mb-4 block underline">01 // TOPOGRAPHY</span>
-                <h2 class="text-5xl font-bold tracking-tighter mb-6 uppercase">SLIDE GEOMETRY</h2>
-                <p class="text-sm text-zinc-400 leading-relaxed mb-6">
-                    The CNC-milled slide undergoes a rigorous nitrocarburizing process. This section highlights the
-                    ejection port tolerances and rear serrations engineered for tactical reliability.
-                </p>
-                <div class="h-[1px] w-24 bg-white/20"></div>
+        <!-- Carbon steps -->
+        <section class="step" id="s-slide">
+            <div class="card" data-card>
+                <span class="card-eye">01 // TOPOGRAPHY</span>
+                <h2 class="card-title">Slide<br>Geometry</h2>
+                <p class="card-body">CNC-milled from bar stock, nitrocarburized to 64 HRC. Tenifer finish resists
+                    corrosion in salt-spray environments indefinitely.</p>
+                <div class="divider"></div>
             </div>
         </section>
 
-        <section class="scrolly-section flex-row-reverse px-12 md:px-24" id="step-2">
-            <div class="content-card">
-                <span class="mono text-xs text-zinc-500 mb-4 block underline">02 // KINETICS</span>
-                <h2 class="text-5xl font-bold tracking-tighter mb-6 uppercase">TRIGGER SYSTEM</h2>
-                <p class="text-sm text-zinc-400 leading-relaxed mb-6">
-                    The core of the "Safe Action" system. A constant trigger pull from the first to the last round.
-                    Internal safeties ensure discharge only occurs upon deliberate engagement.
-                </p>
-                <div class="flex space-x-4">
-                    <div class="px-3 py-1 border border-white/10 text-[10px] mono">5.5 LBS PULL</div>
-                    <div class="px-3 py-1 border border-white/10 text-[10px] mono">0.4 IN TRAVEL</div>
+        <section class="step right" id="s-barrel">
+            <div class="card" data-card>
+                <span class="card-eye">02 // BARREL TECH</span>
+                <h2 class="card-title">Polygonal<br>Rifling</h2>
+                <p class="card-body">Hammer-forged hexagonal profile reduces gas leakage, boosts velocity 5–10% and
+                    extends service life vs conventional rifling.</p>
+                <div class="tags">
+                    <span class="tag">102MM</span><span class="tag">RIGHT-HAND TWIST</span>
                 </div>
             </div>
         </section>
 
-        <section class="scrolly-section px-12 md:px-24" id="step-3">
-            <div class="content-card">
-                <span class="mono text-xs text-zinc-500 mb-4 block underline">03 // ERGONOMICS</span>
-                <h2 class="text-5xl font-bold tracking-tighter mb-6 uppercase">POLYMER FRAME</h2>
-                <p class="text-sm text-zinc-400 leading-relaxed mb-6">
-                    Proprietary high-strength polymer reduces total mass while absorbing recoil energy. Modular
-                    backstraps allow for user-specific grip geometry optimization.
-                </p>
-                <ul class="text-[10px] mono space-y-2 text-zinc-500">
-                    <li>// IMPACT RESISTANT POLYMER</li>
-                    <li>// INTEGRATED ACCESSORY RAIL</li>
-                    <li>// EXTENDED MAGAZINE RELEASE</li>
+        <section class="step" id="s-trigger">
+            <div class="card" data-card>
+                <span class="card-eye">03 // KINETICS</span>
+                <h2 class="card-title">Safe Action<br>System</h2>
+                <p class="card-body">Trigger blade, firing pin, and drop safety engage independently. Consistent 5.5 lb
+                    pull with no external manual safety required.</p>
+                <div class="tags">
+                    <span class="tag">5.5 LB PULL</span><span class="tag">12.5MM TRAVEL</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="step right" id="s-frame">
+            <div class="card" data-card>
+                <span class="card-eye">04 // ERGONOMICS</span>
+                <h2 class="card-title">RTF Polymer<br>Frame</h2>
+                <p class="card-body">High-impact polymer, rough texture finish. Recoil-absorbing Gen4 with modular
+                    backstraps for all hand sizes.</p>
+                <ul class="list-items">
+                    <li>// MODULAR BACKSTRAPS</li>
+                    <li>// AMBI MAG RELEASE</li>
+                    <li>// UNDERCUT TRIGGER GUARD</li>
                 </ul>
             </div>
         </section>
 
-        <section class="h-[80vh] flex flex-col items-center justify-center text-center px-12">
-            <h2 class="text-[8vw] font-black tracking-tighter uppercase mb-8">END OF ANALYSIS</h2>
-            <button class="mono text-xs border border-white px-12 py-4 hover:bg-white hover:text-black transition-all">
-                DOWNLOAD SCHEMATICS
-            </button>
+        <section class="step" id="s-mag">
+            <div class="card" data-card>
+                <span class="card-eye">05 // FEED SYSTEM</span>
+                <h2 class="card-title">Double-Stack<br>Magazine</h2>
+                <p class="card-body">Staggered column, steel-lined polymer body. Drop-free release, orange follower for
+                    empty-chamber confirmation at a glance.</p>
+                <div class="tags">
+                    <span class="tag">15+1 CAPACITY</span><span class="tag">DROP-FREE</span>
+                </div>
+            </div>
         </section>
+
+        <section class="step right" id="s-rail">
+            <div class="card" data-card>
+                <span class="card-eye">06 // MOUNTING</span>
+                <h2 class="card-title">Picatinny<br>Rail</h2>
+                <p class="card-body">Integrated MIL-STD-1913 forward rail. Tested to 200g+ accessories under sustained
+                    fire without frame flex.</p>
+                <div class="tags">
+                    <span class="tag">MIL-STD-1913</span><span class="tag">ZERO FLEX</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="step" id="s-spring">
+            <div class="card" data-card>
+                <span class="card-eye">07 // RECOIL SYSTEM</span>
+                <h2 class="card-title">Dual-Captive<br>Spring</h2>
+                <p class="card-body">Gen4 dual recoil spring dampens felt recoil, extends service interval beyond 10,000
+                    rounds. Tool-less field strip.</p>
+                <ul class="list-items">
+                    <li>// DUAL-CAPTIVE DESIGN</li>
+                    <li>// 10K+ ROUND LIFE</li>
+                    <li>// TOOL-LESS STRIP</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Slide cycle — scrubs Slide_1 bone on scroll -->
+        <section class="shot-section" id="shot-section">
+            <div class="shot-sticky">
+                <div class="card" data-card style="max-width:380px;">
+                    <span class="card-eye">08 // CYCLING</span>
+                    <h2 class="card-title">Bolt<br>Cycle</h2>
+                    <p class="card-body">Scroll to drive the slide through its 20mm travel arc — battery to full recoil
+                        and back. Bone-driven, real-time.</p>
+                    <ul class="list-items">
+                        <li>// 20MM SLIDE TRAVEL</li>
+                        <li>// CASE EJECTION AT 120°</li>
+                        <li>// SPRING-ASSISTED RETURN</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Glock 19 Gen 4 explode (Tri-Phase) -->
+        <section class="explode-section" id="explode-carbon" style="height: 1200vh;">
+            <div class="explode-sticky">
+                <div class="card" data-card style="max-width:360px;">
+                    <span class="card-eye">09 // DISASSEMBLY</span>
+                    <h2 class="card-title">Epic<br>Breakdown</h2>
+                    <p class="card-body">A tri-phase cinematic event. Precision disassembly, internal camera
+                        fly-through, and tactical re-assembly. High-velocity kinetics.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final section -->
+        <section class="end-section">
+            <h1 class="end-title">GLOCK 19</h1>
+            <p
+                style="font-family:'JetBrains Mono', monospace; font-size:10px; color:var(--muted); margin-bottom: 2rem;">
+                REV 4.08 // PERFORMANCE READY
+            </p>
+            <button class="end-btn">VIRTUAL ARMORY</button>
+        </section>
+
+        <section class="end-section">
+            <h2 class="end-title">End of<br>Analysis</h2>
+            <button class="end-btn">DOWNLOAD SCHEMATICS</button>
+        </section>
+
     </main>
 
-    <footer
-        class="p-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center opacity-30 mono text-[10px]">
-        <div>SYSTEM DESIGN BY MONOCHROME BALLISTICS © 2024</div>
-        <div class="mt-4 md:mt-0">LAT: 48.3341° N | LONG: 16.5186° E</div>
+    <footer>
+        <span>MONOCHROME BALLISTICS © 2024 — MECHANICAL SYSTEMS</span>
+        <span>48.3341° N / 16.5186° E</span>
     </footer>
 
     <script>
+        /**
+         * G19 MONOCHROME BALLISTICS — Scroll Controller 
+         *
+         * KEY FACTS FROM INSPECTOR:
+         *
+         * Model Glock 19 Gen 4: mesh/bone structure.
+         *   - 7 meshes, ALL at pos (0,0,0) — skinned to skeleton, not independently positioned
+         *   - 0 animations — no currentTime scrubbing possible
+         *   - Bone tree under "Slide" Object3D → "Body" Bone (root) → 7 child bones:
+         *       Slide_1      (-0.9758, -3.5632,  0.0203)
+         *       Button_1     ( 0.1319,  0.1480,  0.3762)
+         *       Button_2     ( 0.1025, -0.1774,  0.0670)
+         *       Trigger_base ( 0.6236,  0.3274,  0.0014)
+         *       Mag          ( 5.1293, -2.9583, -0.0190)
+         *       Spring       ( 0.0045,  3.5480, -0.0021)
+         *       Barrel       (-1.1378,  2.8564,  0.0066)
+         *     + Trigger_child (0, 1.0508, 0) — child of Trigger_base, skip for explode
+         *
+         * EXPLODE:
+         *   Displace each of the 7 child bones radially from their local centroid.
+         *   Centroid of those 7 bones:
+         *     cx = (-0.9758+0.1319+0.1025+0.6236+5.1293+0.0045-1.1378)/7 = 0.554
+         *     cy = (-3.5632+0.1480-0.1774+0.3274-2.9583+3.5480+2.8564)/7 = 0.026
+         *     cz ≈ 0
+         *   MAX_OFFSET = 4.0 units (bones span ~9 units; this gives clear visual separation)
+         *
+         * SLIDE CYCLE:
+         *   Drive Slide_1.position.y backward (gun's recoil axis) on scroll.
+         *   Origin y = -3.5632. Travel = -2.0 units rearward then spring back.
+         *   Uses smooth triangle wave: goes back at 0→0.5 scroll, returns 0.5→1.
+         *
+         * HOTSPOT ANNOTATIONS:
+         *   Dot buttons inside model-viewer (dot-only, no children).
+         *   Single fixed #hs-panel in main DOM, positioned via getBoundingClientRect().
+         *   Zero shadow-DOM overflow issues.
+         *
+         * CAMERA:
+         *   setAttribute() only — GSAP attr{} tween does NOT work with model-viewer.
+         */
+
+        // DEFINITIVE REDEMPTION: KILL SCROLL MEMORY
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+        window.scrollTo(0, 0);
+
         gsap.registerPlugin(ScrollTrigger);
 
-        const viewer = document.querySelector("#g19-viewer");
-        const hotspots = document.querySelectorAll(".hotspot");
+        // ── Element refs ──────────────────────────────────────────────────────────────
+        const mvC = document.getElementById('mv-carbon');
+        const progFill = document.getElementById('prog-fill');
+        const progLabel = document.getElementById('prog-label');
+        const hsPanel = document.getElementById('hs-panel');
+        const hsTitleEl = document.getElementById('hs-title');
+        const hsBodyEl = document.getElementById('hs-body');
+        const exLabel = document.getElementById('explode-label');
+        const slLabel = document.getElementById('slide-label');
+        const bokeh = document.getElementById('bokeh-layer');
+        const flash = document.getElementById('flash-overlay');
+        const cinemaVig = document.getElementById('cinema-vignette');
 
-        // Set initial state
-        gsap.set(hotspots, { opacity: 0 });
+        const cDots = mvC.querySelectorAll('.hs-dot'); // 7 dots, indices 0–6
 
-        const tl = gsap.timeline({
-            scrollTrigger: {
-                trigger: "main",
-                start: "top top",
-                end: "bottom bottom",
-                scrub: 1,
-                onUpdate: (self) => {
-                    document.getElementById('p-fill').style.height = `${self.progress * 100}%`;
+        // ── Camera ────────────────────────────────────────────────────────────────────
+        // Proxy for smooth camera transitions
+        const camProxy = {
+            theta: 45, phi: 80, radius: 100, // orbit defaults
+            tx: 0, ty: 0, tz: 0,            // target defaults
+            fov: 30
+        };
+
+        function cam(mv, orbit, target, fov) {
+            const parts = orbit.split(' ');
+            const newTheta = parseFloat(parts[0]);
+            const newPhi = parseFloat(parts[1]);
+            const newRadius = parts[2] === 'auto' ? 450 : parseFloat(parts[2]);
+
+            let newTX = 0, newTY = 0, newTZ = 0;
+            if (target) {
+                const tParts = target.split(' ');
+                newTX = parseFloat(tParts[0]);
+                newTY = parseFloat(tParts[1]);
+                newTZ = parseFloat(tParts[2]);
+            }
+            const newFOV = fov ? parseFloat(fov) : 30;
+
+            gsap.to(camProxy, {
+                theta: newTheta, phi: newPhi, radius: newRadius,
+                tx: newTX, ty: newTY, tz: newTZ,
+                fov: newFOV,
+                duration: 0.5, // High-speed cinematic zips
+                ease: 'power3.inOut',
+                onUpdate: () => {
+                    mv.setAttribute('camera-orbit', `${camProxy.theta}deg ${camProxy.phi}deg ${camProxy.radius}%`);
+                    mv.setAttribute('camera-target', `${camProxy.tx}m ${camProxy.ty}m ${camProxy.tz}m`);
+                    mv.setAttribute('field-of-view', `${camProxy.fov}deg`);
+                }
+            });
+        }
+
+        // ── Hotspot annotation panel ──────────────────────────────────────────────────
+        function activateDot(dot) {
+            deactivateAll();
+            if (!dot) return;
+            dot.classList.add('active');
+            hsTitleEl.textContent = dot.dataset.title || '';
+            hsBodyEl.textContent = dot.dataset.body || '';
+            // Position panel: right of dot, vertically centered
+            const r = dot.getBoundingClientRect();
+            const x = r.right + 18;
+            const y = r.top + r.height / 2;
+            // Flip left if panel would overflow right edge
+            hsPanel.style.left = (x + 240 > window.innerWidth ? r.left - 258 : x) + 'px';
+            hsPanel.style.top = y + 'px';
+            hsPanel.classList.add('visible');
+        }
+
+        function deactivateAll() {
+            cDots.forEach(d => d.classList.remove('active'));
+            hsPanel.classList.remove('visible');
+        }
+
+        // Hover (user-initiated, works in addition to scroll-triggered)
+        [...cDots].forEach(dot => {
+            dot.addEventListener('mouseenter', () => activateDot(dot));
+            dot.addEventListener('mouseleave', deactivateAll);
+        });
+
+        // ── Scene graph access ────────────────────────────────────────────────────────
+        function getScene(mv) {
+            const sym = Object.getOwnPropertySymbols(mv)
+                .find(s => s.description === 'scene');
+            return sym ? mv[sym] : null;
+        }
+
+        // ── Bone-based explode ────────────────────────────────────────────────────────
+        // Only these 7 child-of-Body bones get displaced.
+        // Body is skipped (moving it moves everything).
+        // Trigger_child is skipped (it would double-displace relative to Trigger_base).
+        const TARGET_BONES = new Set([
+            'Slide_1', 'Button_1', 'Button_2',
+            'Trigger_base', 'Mag', 'Spring', 'Barrel'
+        ]);
+
+        const CENTROID = { x: 0.5540, y: 0.0261, z: 0.0050 };
+        const MAX_OFFSET = 35.0; // Cinematic scale
+        const SLIDE_TRAVEL = 2.0;
+
+        // Vectors + aggressive rotations (rx/ry/rz)
+        // Values boosted for clearer visual torque during scroll
+        const BONE_VECTORS = {
+            'Slide_1': { x: 0, y: 12.5, z: -8.0, rx: 0.6, ry: 0, rz: -0.3 },
+            'Barrel': { x: 0, y: 10.2, z: 12.5, rx: -0.8, ry: 0.9, rz: 0 },
+            'Spring': { x: 0, y: 5.8, z: 10.2, rx: 0, ry: 0, rz: 1.5 },
+            'Mag': { x: 0, y: -15.5, z: -2.0, rx: 0, ry: -1.2, rz: 0 },
+            'Trigger_base': { x: 0, y: -3.5, z: 4.5, rx: 0.4, ry: 0, rz: 0.5 },
+            'Button_1': { x: -9.8, y: 0, z: -1.2, rx: 0.8, ry: 0.8, rz: 0 },
+            'Button_2': { x: 9.8, y: 0, z: -1.2, rx: -0.8, ry: -0.8, rz: 0 }
+        };
+
+        // SHOWCASE SECTORS (Phase 2 sub-ranges)
+        const SHOWCASE_SECTORS = [
+            { id: 'hs-slide', name: 'Slide_1', start: 0.12, end: 0.25 },
+            { id: 'hs-barrel', name: 'Barrel', start: 0.25, end: 0.38 },
+            { id: 'hs-spring', name: 'Spring', start: 0.38, end: 0.51 },
+            { id: 'hs-mag', name: 'Mag', start: 0.51, end: 0.64 },
+            { id: 'hs-trigger', name: 'Trigger_base', start: 0.64, end: 0.77 },
+            { id: 'hs-slidelock', name: 'Button_1', start: 0.77, end: 0.85 },
+            { id: 'hs-magrelease', name: 'Button_2', start: 0.85, end: 0.92 }
+        ];
+
+        let bonesCaptured = false;
+
+        function buildBoneData(mv) {
+            if (bonesCaptured) return carbonBones;
+
+            // CRITICAL: Prevent capture if page isn't at the top
+            if (window.scrollY > 10) {
+                window.scrollTo(0, 0);
+                return null;
+            }
+
+            const scene = getScene(mv);
+            if (!scene) {
+                console.warn('[bones] scene symbol not found on', mv.id);
+                return null;
+            }
+
+            const boneList = [];
+            scene.traverse(obj => {
+                if (obj.type === 'Bone' && TARGET_BONES.has(obj.name)) {
+                    const ox = obj.position.x;
+                    const oy = obj.position.y;
+                    const oz = obj.position.z;
+                    const orx = obj.rotation.x;
+                    const ory = obj.rotation.y;
+                    const orz = obj.rotation.z;
+
+                    // Use specific vectors if defined, otherwise zero displacement
+                    const vec = BONE_VECTORS[obj.name] || { x: 0, y: 0, z: 0 };
+
+                    boneList.push({
+                        bone: obj,
+                        name: obj.name,
+                        ox, oy, oz, orx, ory, orz,
+                        dx: vec.x, dy: vec.y, dz: vec.z,
+                        drx: vec.rx || 0, dry: vec.ry || 0, drz: vec.rz || 0
+                    });
+                }
+            });
+
+            if (!boneList.length) {
+                console.warn('[bones] no target bones found in', mv.id,
+                    '— scene traverse returned these bone names:',
+                    (() => { const n = []; scene.traverse(o => { if (o.type === 'Bone') n.push(o.name); }); return n; })()
+                );
+                return null;
+            }
+
+            bonesCaptured = true;
+            return boneList;
+        }
+
+        function applyExplode(mv, boneList, progress) {
+            if (!boneList || !bonesCaptured) return;
+
+            // Hide hotspots during disassembly to avoid "floating" dots
+            const dots = mv.querySelectorAll('.hs-dot');
+            dots.forEach(d => {
+                const opacity = progress < 0.02 ? 1 : 0;
+                d.style.opacity = opacity;
+                d.style.pointerEvents = opacity === 1 ? 'auto' : 'none';
+                d.style.transition = 'opacity 0.3s ease';
+            });
+
+            boneList.forEach(b => {
+                b.bone.position.x = b.ox + b.dx * progress;
+                b.bone.position.y = b.oy + b.dy * progress;
+                b.bone.position.z = b.oz + b.dz * progress;
+
+                b.bone.rotation.x = b.orx + b.drx * progress;
+                b.bone.rotation.y = b.ory + b.dry * progress;
+                b.bone.rotation.z = b.orz + b.drz * progress;
+            });
+            if (mv.requestUpdate) mv.requestUpdate();
+        }
+
+        function resetBones(mv, boneList) {
+            if (!boneList) return;
+            boneList.forEach(b => {
+                b.bone.position.x = b.ox;
+                b.bone.position.y = b.oy;
+                b.bone.position.z = b.oz;
+                b.bone.rotation.x = b.orx;
+                b.bone.rotation.y = b.ory;
+                b.bone.rotation.z = b.orz;
+            });
+            // Show hotspots again when reset
+            const dots = mv.querySelectorAll('.hs-dot');
+            dots.forEach(d => {
+                d.style.opacity = '1';
+                d.style.pointerEvents = 'auto';
+            });
+            if (mv.requestUpdate) mv.requestUpdate();
+        }
+
+        function getSlide1Bone(mv) {
+            const scene = getScene(mv);
+            if (!scene) return null;
+            let found = null;
+            scene.traverse(o => { if (o.type === 'Bone' && o.name === 'Slide_1') found = o; });
+            return found;
+        }
+
+        // Bone data (populated after model load)
+        let carbonBones = null;
+        let carbonSlide = null;
+        let carbonSlideOriginY = null;
+
+        mvC.addEventListener('load', () => {
+            // Force Absolute Zero
+            window.scrollTo(0, 0);
+            mvC.setAttribute('camera-orbit', '45deg 80deg 450%');
+            mvC.setAttribute('camera-target', '0.55m 0m 0m'); // PERFECT CENTERING
+
+            setTimeout(() => {
+                carbonBones = buildBoneData(mvC);
+                carbonSlide = getSlide1Bone(mvC);
+                if (carbonSlide) carbonSlideOriginY = carbonSlide.position.y;
+
+                // Hard reset
+                resetBones(mvC, carbonBones);
+                console.log('[REDEMPTION] Engine Locked. Clipping eliminated.');
+            }, 850);
+        });
+
+        // ── Progress bar ──────────────────────────────────────────────────────────────
+        ScrollTrigger.create({
+            trigger: 'main', start: 'top top', end: 'bottom bottom',
+            onUpdate(self) {
+                progFill.style.height = (self.progress * 100) + '%';
+                progLabel.textContent = String(Math.round(self.progress * 9) + 1).padStart(2, '0'); // Adjusted for 9 steps
+            }
+        });
+
+        // ── Floating pill parallax ────────────────────────────────────────────────────
+        [
+            ['p1', -50, 60, 0, 0],
+            ['p2', 30, -60, 15, -15],
+            ['p3', -70, 50, 0, 0],
+            ['p4', 20, -45, -8, 8],
+            ['p5', -55, 70, 10, -10],
+            ['p6', 45, -65, -5, 5],
+            ['p7', -35, 55, 8, -8],
+            ['p8', 55, -75, -15, 15],
+        ].forEach(([id, ys, ye, xs, xe]) => {
+            gsap.fromTo(`#${id}`,
+                { yPercent: ys, xPercent: xe },
+                {
+                    yPercent: ye, xPercent: xs, ease: 'none',
+                    scrollTrigger: { trigger: 'main', start: 'top top', end: 'bottom bottom', scrub: 2.5 }
+                }
+            );
+        });
+
+        // ── Card reveals ──────────────────────────────────────────────────────────────
+        document.querySelectorAll('[data-card]').forEach((card, i) => {
+            gsap.from(card, {
+                x: i % 2 === 0 ? -50 : 50, opacity: 0,
+                duration: 0.9, ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: card.closest('section'),
+                    start: 'top 70%',
+                    toggleActions: 'play none none reverse'
+                }
+            });
+        });
+
+        // ── Hero parallax ─────────────────────────────────────────────────────────────
+        gsap.to('.hero-title', {
+            yPercent: 25, ease: 'none',
+            scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true }
+        });
+
+        // ── Camera + hotspot steps ────────────────────────────────────────────────────
+        const STEPS = [
+            // HERO: START FULL VIEW
+            { id: 's-slide', mv: mvC, orbit: '25deg 88deg 450%', target: '0 0 0', dot: cDots[0] },
+            { id: 's-barrel', mv: mvC, orbit: '110deg 75deg 8%', target: '0.08m 0.02m 0m', dot: cDots[1] },
+            { id: 's-trigger', mv: mvC, orbit: '-160deg 105deg 10%', target: '0m -0.02m 0.01m', dot: cDots[2] },
+            { id: 's-frame', mv: mvC, orbit: '-40deg 95deg 450%', target: '0 0 0', dot: cDots[3] },
+            { id: 's-mag', mv: mvC, orbit: '30deg 115deg 12%', target: '0m -0.08m 0m', dot: cDots[4] },
+            { id: 's-rail', mv: mvC, orbit: '185deg 82deg 10%', target: '0.04m -0.03m 0m', dot: cDots[5] },
+            { id: 's-spring', mv: mvC, orbit: '55deg 78deg 450%', target: '0 0 0', dot: cDots[6] },
+        ];
+
+        STEPS.forEach(s => {
+            ScrollTrigger.create({
+                trigger: `#${s.id}`, start: 'top 55%', end: 'bottom 55%',
+                onEnter() { cam(s.mv, s.orbit, s.target, 24); activateDot(s.dot); },
+                onEnterBack() { cam(s.mv, s.orbit, s.target, 24); activateDot(s.dot); },
+                onLeave() { deactivateAll(); },
+                onLeaveBack() { deactivateAll(); }
+            });
+        });
+
+        // ── Slide cycle ───────────────────────────────────────────────────────────────
+        ScrollTrigger.create({
+            trigger: '#shot-section', start: 'top top', end: 'bottom top',
+            scrub: 1.0,
+            onEnter() {
+                deactivateAll();
+                cam(mvC, '8deg 84deg 80%', null, '26');
+                slLabel.classList.add('on');
+            },
+            onLeave() { slLabel.classList.remove('on'); },
+            onEnterBack() {
+                cam(mvC, '8deg 84deg 220%', null, '26');
+                slLabel.classList.add('on');
+            },
+            onLeaveBack() {
+                slLabel.classList.remove('on');
+                if (carbonSlide && carbonSlideOriginY !== null) {
+                    carbonSlide.position.y = carbonSlideOriginY;
+                    if (mvC.requestUpdate) mvC.requestUpdate();
+                }
+            },
+            onUpdate(self) {
+                if (!carbonSlide || carbonSlideOriginY === null) return;
+                const half = self.progress <= 0.5 ? self.progress * 2 : (1 - self.progress) * 2;
+                carbonSlide.position.y = carbonSlideOriginY - (half * SLIDE_TRAVEL);
+                if (mvC.requestUpdate) mvC.requestUpdate();
+            }
+        });
+
+        // ── 360 Orbit ───────────────────────────
+        ScrollTrigger.create({
+            trigger: '#explode-carbon', start: 'top top', end: 'bottom top',
+            scrub: 1.4, // Maximum momentum
+            onEnter() {
+                deactivateAll();
+                exLabel.classList.add('on');
+                bokeh.style.opacity = 1;
+                cinemaVig.classList.add('active');
+            },
+            onLeave() {
+                exLabel.classList.remove('on');
+                bokeh.style.opacity = 0;
+                cinemaVig.classList.remove('active');
+            },
+            onEnterBack() {
+                exLabel.classList.add('on');
+                bokeh.style.opacity = 1;
+                cinemaVig.classList.add('active');
+            },
+            onLeaveBack() {
+                exLabel.classList.remove('on');
+                bokeh.style.opacity = 0;
+                cinemaVig.classList.remove('active');
+                resetBones(mvC, carbonBones);
+            },
+            onUpdate(self) {
+                if (!bonesCaptured) return;
+                const rawP = self.progress;
+                // DEAD ZONE: Prevent popping at the exact start of scroll
+                const p = rawP < 0.02 ? 0 : (rawP - 0.02) / 0.98;
+
+                let explodeP = 0, radius = 450, tx = 0, ty = 0, tz = 0, theta = 45, phi = 80, blur = 0, exposure = 1.0;
+
+                if (p <= 0) {
+                    explodeP = 0;
+                    radius = 450;
+                    theta = 45;
+                    phi = 80;
+                    tx = 0.55;
+                }
+                else if (p < 0.1) {
+                    // PHASE 1: IMPACT BLAST (0% -> 10%)
+                    explodeP = p / 0.1;
+                    radius = 450 - (explodeP * 330);
+                    theta = 45 + (explodeP * 140);
+                    phi = 80 - (explodeP * 35);
+                    tx = 0.55 * (1.0 - explodeP); // Move into model center
+                    exposure = 1.0 + (Math.sin(explodeP * Math.PI) * 7.5);
+                    tx += (Math.random() - 0.5) * 0.12 * explodeP;
+                    ty = (Math.random() - 0.5) * 0.12 * explodeP;
+                }
+                else if (p < 0.92) {
+                    // PHASE 2: 360 ORBIT (10% -> 92%)
+                    explodeP = 1.0;
+                    const orbitP = (p - 0.1) / 0.82;
+                    radius = 120 + Math.sin(orbitP * Math.PI * 2) * 60;
+                    theta = 185 + (orbitP * 360);
+                    phi = 45 + Math.cos(orbitP * Math.PI * 4) * 45;
+
+                    // CINEMATIC SHOWCASE TRACKING
+                    let activeSection = null;
+                    SHOWCASE_SECTORS.forEach(sec => {
+                        if (p >= sec.start && p < sec.end) activeSection = sec;
+                    });
+
+                    if (activeSection) {
+                        const boneData = carbonBones.find(b => b.name === activeSection.name);
+                        if (boneData) {
+                            // Travel target toexploded piece (coordinates in model-viewer space are meters/100 approximately)
+                            // We use small multipliers to keep framing cinematic (don't bury camera inside mesh)
+                            tx = (boneData.ox + boneData.dx) * 0.012;
+                            ty = (boneData.oy + boneData.dy) * 0.012;
+                            tz = (boneData.oz + boneData.dz) * 0.012;
+
+                            // Auto-activate hotspot
+                            const dot = mvC.querySelector(`[slot="${activeSection.id}"]`);
+                            if (dot) {
+                                // Manual activation bypass for cinematic sync
+                                dot.classList.add('active');
+                                hsTitleEl.textContent = dot.dataset.title || '';
+                                hsBodyEl.textContent = dot.dataset.body || '';
+                                hsPanel.style.left = '50%';
+                                hsPanel.style.top = '15%'; // Center top HUD style
+                                hsPanel.style.transform = 'translate(-50%, 0)';
+                                hsPanel.classList.add('visible');
+                                // Force vis for exploded piece dots
+                                dot.style.opacity = 1;
+                                dot.style.pointerEvents = 'auto';
+                            }
+                        }
+                    } else {
+                        deactivateAll();
+                        tx = Math.sin(orbitP * Math.PI * 4) * 0.12;
+                        ty = Math.cos(orbitP * Math.PI * 4) * 0.12;
+                    }
+
+                    blur = 4 + Math.sin(orbitP * Math.PI * 12) * 14;
+                    exposure = 1.3 + Math.sin(orbitP * Math.PI * 2) * 0.6;
+                }
+                else {
+                    // PHASE 3: SNAP REBUILD (92% -> 100%)
+                    deactivateAll();
+                    const rebuildP = (p - 0.92) / 0.08;
+                    explodeP = 1.0 - rebuildP;
+                    radius = 120 + (rebuildP * 330);
+                    theta = 185 + 360 + (rebuildP * 45);
+                    phi = 70 + (rebuildP * 10);
+                    blur = (1.0 - rebuildP) * 18;
+                    exposure = 1.9 - (rebuildP * 0.9);
+                    tx = 0.55 * rebuildP + (Math.random() - 0.5) * 0.05 * (1.0 - rebuildP);
+                    ty = (Math.random() - 0.5) * 0.05 * (1.0 - rebuildP);
+                }
+
+                applyExplode(mvC, carbonBones, explodeP);
+                mvC.setAttribute('camera-orbit', `${theta}deg ${phi}deg ${radius}%`);
+                mvC.setAttribute('camera-target', `${tx}m ${ty}m ${tz}m`);
+                mvC.setAttribute('exposure', exposure);
+                bokeh.style.backdropFilter = `blur(${blur}px)`;
+
+                if (p > 0 && p < 0.1) {
+                    flash.style.opacity = (1.0 - (p / 0.1)) * 0.98;
+                } else {
+                    flash.style.opacity = 0;
                 }
             }
         });
 
-        // Scrollytelling Timeline
-        tl.to(viewer, {
-            attr: { "camera-orbit": "0deg 85deg 1.5m", "field-of-view": "30deg" },
-            duration: 1
-        })
-            .to(hotspots[0], { opacity: 1, attr: { "data-active": "true" }, duration: 0.2 }, "-=0.2")
-
-            .to(viewer, {
-                attr: { "camera-orbit": "-90deg 90deg 1.8m", "camera-target": "0m 0.05m 0m" },
-                duration: 1
-            })
-            .to(hotspots[0], { opacity: 0, attr: { "data-active": "false" }, duration: 0.2 }, "-=1")
-            .to(hotspots[1], { opacity: 1, attr: { "data-active": "true" }, duration: 0.2 })
-
-            .to(viewer, {
-                attr: { "camera-orbit": "-45deg 100deg 2.2m", "camera-target": "0m -0.05m 0m" },
-                duration: 1
-            })
-            .to(hotspots[1], { opacity: 0, attr: { "data-active": "false" }, duration: 0.2 }, "-=1")
-            .to(hotspots[2], { opacity: 1, attr: { "data-active": "true" }, duration: 0.2 })
-
-            .to(viewer, {
-                attr: { "camera-orbit": "180deg 75deg 3m", "camera-target": "0m 0m 0m" },
-                duration: 1
-            })
-            .to(hotspots[2], { opacity: 0, attr: { "data-active": "false" }, duration: 0.2 }, "-=1");
-
-        // Text reveal animations
-        const sections = document.querySelectorAll('.content-card');
-        sections.forEach(section => {
-            gsap.from(section, {
-                scrollTrigger: {
-                    trigger: section,
-                    start: "top 80%",
-                    end: "bottom 20%",
-                    toggleActions: "play reverse play reverse"
-                },
-                x: -50,
-                opacity: 0,
-                duration: 0.8,
-                ease: "power2.out"
-            });
-        });
-
-        // Smooth reveal for the model on load
+        // ── Page load ─────────────────────────────────────────────────────────────────
         window.addEventListener('load', () => {
-            gsap.to("body", { opacity: 1, duration: 2 });
-            gsap.from(viewer, { opacity: 0, scale: 0.9, duration: 2.5, ease: "expo.out" });
+            gsap.to('body', { opacity: 1, duration: 2.2, ease: 'power2.out' });
+            cam(mvC, '45deg 80deg 450%', '3.0m 0m 0m', '45deg');
+
+            // RESET: Force bone reset at top
+            ScrollTrigger.create({
+                trigger: '.hero', start: 'top top', end: 'bottom top',
+                onEnter() { resetBones(mvC, carbonBones); cam(mvC, '45deg 80deg 450%', '0.55m 0m 0m', '45deg'); },
+                onEnterBack() { resetBones(mvC, carbonBones); cam(mvC, '45deg 80deg 450%', '0.55m 0m 0m', '45deg'); }
+            });
         });
     </script>
 </body>
