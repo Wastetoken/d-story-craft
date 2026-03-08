@@ -58,7 +58,7 @@ const App: React.FC = () => {
     }
 
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [mode, isPlacingHotspot, setLandingMode]);
+  }, [mode, isPlacingHotspot, setLandingMode, landingMode]);
 
   const glConfig = useMemo(() => ({
     antialias: true,
