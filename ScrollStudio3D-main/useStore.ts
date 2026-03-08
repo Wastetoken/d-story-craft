@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { StoreState, EngineMode, SceneConfig, SceneChapter, StorySection, Hotspot, StorySectionStyle, ProjectSchema, Keyframe, TransitionConfig, AssetAudit, PerformanceTier, MaterialOverride, FontDefinition, ViewMode } from './types';
+import { StoreState, EngineMode, SceneConfig, SceneChapter, StorySection, Hotspot, StorySectionStyle, ProjectSchema, Keyframe, TransitionConfig, AssetAudit, PerformanceTier, MaterialOverride, FontDefinition, ViewMode, DOMSection, PageChrome } from './types';
 
 const DEFAULT_CONFIG: SceneConfig = {
   modelScale: 1,
@@ -51,6 +51,43 @@ const DEFAULT_BEAT_STYLE: StorySectionStyle = {
   padding: 40,
   backdropBlur: 30,
   entryAnimation: 'fade-up'
+};
+
+export const DEFAULT_DOM_SECTION: Omit<DOMSection, 'id' | 'progress' | 'exitProgress'> = {
+  layout: 'left',
+  cardStyle: 'glass',
+  fontVariant: 'sans',
+  headline: '',
+  subheading: '',
+  bodyText: '',
+  buttonLabel: '',
+  buttonUrl: '',
+  backgroundColor: '#ffffff',
+  textColor: '#888888',
+  accentColor: '#000000',
+  backgroundOpacity: 0.5,
+};
+
+export const DEFAULT_PAGE_CHROME: PageChrome = {
+  showNav: true,
+  navTitle: '',
+  navTextColor: '#888888',
+  navBackgroundColor: '#ffffff',
+  navBackgroundOpacity: 0,
+  pageBackgroundColor: '#ffffff',
+  showProgressBar: false,
+  progressBarColor: '#888888',
+  showNoiseOverlay: false,
+  noiseOpacity: 0.05,
+  showVignette: false,
+  vignetteColor: '#000000',
+  vignetteOpacity: 0.5,
+  showScanlines: false,
+  scanlinesOpacity: 0.1,
+  showFooter: false,
+  footerText: '',
+  footerTextColor: '#888888',
+  footerBackgroundColor: '#ffffff',
 };
 
 export const useStore = create<StoreState & {
@@ -120,7 +157,9 @@ export const useStore = create<StoreState & {
       cameraPath: [],
       narrativeBeats: [],
       spatialAnnotations: [],
-      materialOverrides: {}
+      materialOverrides: {},
+      domSections: [],
+      pageChrome: { ...DEFAULT_PAGE_CHROME }
     };
     const newChapters = [...state.chapters, newChapter];
 
@@ -286,6 +325,59 @@ export const useStore = create<StoreState & {
     })
   })),
 
+  addDOMSection: (chapterId) => set((state) => {
+    const chapter = state.chapters.find(c => c.id === chapterId);
+    if (!chapter) return state;
+    const id = Math.random().toString(36).substring(2, 9);
+    const newSection: DOMSection = {
+      ...DEFAULT_DOM_SECTION,
+      id,
+      progress: state.currentProgress,
+      exitProgress: 1.0,
+    };
+    const updatedSections = [...chapter.domSections, newSection].sort((a, b) => a.progress - b.progress);
+    // Recalculate exitProgress values
+    updatedSections.forEach((s, i) => {
+      s.exitProgress = i < updatedSections.length - 1 ? updatedSections[i + 1].progress : 1.0;
+    });
+    return {
+      chapters: state.chapters.map(c => c.id === chapterId ? { ...c, domSections: updatedSections } : c)
+    };
+  }),
+
+  removeDOMSection: (id) => set((state) => ({
+    chapters: state.chapters.map(c => {
+      const filtered = c.domSections.filter(s => s.id !== id);
+      // Recalculate exitProgress values
+      filtered.forEach((s, i) => {
+        s.exitProgress = i < filtered.length - 1 ? filtered[i + 1].progress : 1.0;
+      });
+      return { ...c, domSections: filtered };
+    })
+  })),
+
+  updateDOMSection: (id, updates) => set((state) => ({
+    chapters: state.chapters.map(c => {
+      const idx = c.domSections.findIndex(s => s.id === id);
+      if (idx === -1) return c;
+      const updatedSections = c.domSections.map(s => s.id === id ? { ...s, ...updates } : s);
+      // Re-sort if progress changed
+      if (updates.progress !== undefined) {
+        updatedSections.sort((a, b) => a.progress - b.progress);
+        updatedSections.forEach((s, i) => {
+          s.exitProgress = i < updatedSections.length - 1 ? updatedSections[i + 1].progress : 1.0;
+        });
+      }
+      return { ...c, domSections: updatedSections };
+    })
+  })),
+
+  updatePageChrome: (chapterId, updates) => set((state) => ({
+    chapters: state.chapters.map(c => c.id === chapterId
+      ? { ...c, pageChrome: { ...c.pageChrome, ...updates } }
+      : c)
+  })),
+
   updateMaterial: (meshName, updates) => set((state) => ({
     chapters: state.chapters.map(c => {
       if (c.id !== state.activeChapterId) return c;
@@ -324,6 +416,12 @@ export const useStore = create<StoreState & {
 
   loadProject: (project) => {
     const chapters = project.chapters.map(c => {
+      // Ensure new fields have defaults for backwards compatibility
+      const chapter = {
+        ...c,
+        domSections: c.domSections || [],
+        pageChrome: { ...DEFAULT_PAGE_CHROME, ...(c.pageChrome || {}) },
+      };
       if (project.embeddedAssets && project.embeddedAssets[c.id]) {
         try {
           const base64 = project.embeddedAssets[c.id];
@@ -332,12 +430,12 @@ export const useStore = create<StoreState & {
           for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
           const blob = new Blob([bytes], { type: 'model/gltf-binary' });
           const url = URL.createObjectURL(blob) + '#.glb';
-          return { ...c, modelUrl: url };
+          return { ...chapter, modelUrl: url };
         } catch (e) {
           console.error("Failed to decode embedded asset for chapter:", c.id, e);
         }
       }
-      return c;
+      return chapter;
     });
 
     const firstChapter = chapters[0];

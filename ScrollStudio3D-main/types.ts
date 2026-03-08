@@ -3,6 +3,18 @@ export type Vector3Array = [number, number, number];
 export type QuaternionArray = [number, number, number, number];
 
 export type TransitionType = 'glitch' | 'flare' | 'blur' | 'fade' | 'none';
+
+export type DOMSectionLayout =
+  | 'left'
+  | 'right'
+  | 'center'
+  | 'bottom-left'
+  | 'bottom-right'
+  | 'bottom-center';
+
+export type DOMSectionCardStyle = 'glass' | 'solid' | 'outline' | 'none';
+
+export type DOMSectionFontVariant = 'display' | 'sans' | 'mono' | 'serif';
 export type EnvironmentPreset = 'studio' | 'city' | 'forest' | 'apartment' | 'night' | 'sunset';
 
 export interface TransitionConfig {
@@ -112,6 +124,11 @@ export interface StoreState {
   removeHotspot: (id: string) => void;
   updateHotspot: (id: string, updates: Partial<Hotspot>) => void;
 
+  addDOMSection: (chapterId: string) => void;
+  removeDOMSection: (id: string) => void;
+  updateDOMSection: (id: string, updates: Partial<DOMSection>) => void;
+  updatePageChrome: (chapterId: string, updates: Partial<PageChrome>) => void;
+
   updateMaterial: (meshName: string, updates: Partial<MaterialOverride>) => void;
   setConfig: (config: Partial<SceneConfig>) => void;
   setAudit: (audit: AssetAudit) => void;
@@ -191,6 +208,54 @@ export interface SceneConfig {
   envPreset: EnvironmentPreset;
 }
 
+export interface DOMSection {
+  id: string;
+  progress: number;
+  exitProgress: number;
+  layout: DOMSectionLayout;
+  cardStyle: DOMSectionCardStyle;
+  fontVariant: DOMSectionFontVariant;
+
+  headline: string;
+  subheading: string;
+  bodyText: string;
+  buttonLabel: string;
+  buttonUrl: string;
+
+  backgroundColor: string;
+  textColor: string;
+  accentColor: string;
+  backgroundOpacity: number;
+}
+
+export interface PageChrome {
+  showNav: boolean;
+  navTitle: string;
+  navTextColor: string;
+  navBackgroundColor: string;
+  navBackgroundOpacity: number;
+
+  pageBackgroundColor: string;
+
+  showProgressBar: boolean;
+  progressBarColor: string;
+
+  showNoiseOverlay: boolean;
+  noiseOpacity: number;
+
+  showVignette: boolean;
+  vignetteColor: string;
+  vignetteOpacity: number;
+
+  showScanlines: boolean;
+  scanlinesOpacity: number;
+
+  showFooter: boolean;
+  footerText: string;
+  footerTextColor: string;
+  footerBackgroundColor: string;
+}
+
 export interface SceneChapter {
   id: string;
   name: string;
@@ -203,6 +268,8 @@ export interface SceneChapter {
   narrativeBeats: StorySection[];
   spatialAnnotations: Hotspot[];
   materialOverrides: Record<string, MaterialOverride>;
+  domSections: DOMSection[];
+  pageChrome: PageChrome;
 }
 
 export type EngineMode = 'edit' | 'preview';
