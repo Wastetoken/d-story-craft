@@ -18,6 +18,18 @@ const TutorialSection: React.FC<{ title: string; children: React.ReactNode; icon
 export const Handbook: React.FC = () => {
   const { showHandbook, setShowHandbook } = useStore();
   const [activeTab, setActiveTab] = useState<'directing' | 'optics' | 'atmosphere' | 'fx' | 'canvas' | 'distribution'>('directing');
+  const [copied, setCopied] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const handleCopyAll = () => {
+    if (contentRef.current) {
+      const text = contentRef.current.innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      });
+    }
+  };
 
   if (!showHandbook) return null;
 
