@@ -157,7 +157,9 @@ export const useStore = create<StoreState & {
       cameraPath: [],
       narrativeBeats: [],
       spatialAnnotations: [],
-      materialOverrides: {}
+      materialOverrides: {},
+      domSections: [],
+      pageChrome: { ...DEFAULT_PAGE_CHROME }
     };
     const newChapters = [...state.chapters, newChapter];
 
