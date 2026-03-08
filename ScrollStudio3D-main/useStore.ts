@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { StoreState, EngineMode, SceneConfig, SceneChapter, StorySection, Hotspot, StorySectionStyle, ProjectSchema, Keyframe, TransitionConfig, AssetAudit, PerformanceTier, MaterialOverride, FontDefinition, ViewMode } from './types';
+import { StoreState, EngineMode, SceneConfig, SceneChapter, StorySection, Hotspot, StorySectionStyle, ProjectSchema, Keyframe, TransitionConfig, AssetAudit, PerformanceTier, MaterialOverride, FontDefinition, ViewMode, DOMSection, PageChrome } from './types';
 
 const DEFAULT_CONFIG: SceneConfig = {
   modelScale: 1,
