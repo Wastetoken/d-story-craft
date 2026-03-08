@@ -65,6 +65,14 @@ When a section is selected, a small floating panel appears near it with quick-ac
 • Opacity: Background opacity slider (hidden when card style is "none").
 • Delete: Red trash button to remove the section entirely.
 
+SCROLL BEHAVIOR HUD
+When a section is selected, a small HUD appears in the top-right corner with scroll behavior controls:
+• Direction: Choose Vertical or Horizontal — these are mutually exclusive. Selecting one automatically deselects the other.
+• Pin: Independent toggle. When enabled, the section stays fixed on screen while the scroll catches up to its exit point.
+
+SAFE ZONE BRACKETS
+When a section is selected, white corner brackets appear around its edges. These are safe zone indicators — they show the element's exact bounding box on the viewport so you can align sections precisely.
+
 TIMING & SCROLL RANGE
 Each DOM section has a progress (entry) and exitProgress (exit) value. These control when the section is visible during the scroll.
 Set these by dragging the section's bar on the DOM row in the timeline. The left edge is entry, the right edge is exit.
