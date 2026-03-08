@@ -15,6 +15,7 @@ export const ImprovedTimeline: React.FC = () => {
 
   const keyframes = activeChapter.cameraPath;
   const beats = activeChapter.narrativeBeats;
+  const domSections = activeChapter.domSections || [];
 
   const handleSeek = (e: React.MouseEvent) => {
     if (!timelineRef.current) return;
@@ -79,6 +80,20 @@ export const ImprovedTimeline: React.FC = () => {
                   </div>
                 </div>
               ))}
+
+              {/* DOM Section Markers */}
+              {domSections.map((ds) => (
+                <div 
+                  key={ds.id}
+                  onClick={(e) => { e.stopPropagation(); setCurrentProgress(ds.progress); }}
+                  className="absolute top-1/2 -translate-y-1/2 w-2 h-6 bg-amber-400 border-2 border-white rounded-md pointer-events-auto shadow-lg transition-all hover:scale-110 cursor-pointer group"
+                  style={{ left: `${ds.progress * 100}%`, transform: 'translate(-50%, -50%)' }}
+                >
+                  <div className="absolute -top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-amber-500 text-white text-[8px] font-bold px-2 py-1 rounded whitespace-nowrap max-w-32 truncate">
+                    {(ds.headline || 'Untitled Section').substring(0, 24)}
+                  </div>
+                </div>
+              ))}
               
               {/* Playhead */}
               <div 
@@ -91,12 +106,22 @@ export const ImprovedTimeline: React.FC = () => {
 
             {/* Chapter Indicators */}
             <div className="flex justify-between items-center mt-4 px-2">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-blue-400"></div>
-                <span className="text-[9px] text-white/40 uppercase tracking-wider font-bold">Keyframes</span>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-blue-400"></div>
+                  <span className="text-[9px] text-white/40 uppercase tracking-wider font-bold">Keyframes</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-purple-400"></div>
+                  <span className="text-[9px] text-white/40 uppercase tracking-wider font-bold">Story Beats</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-amber-400"></div>
+                  <span className="text-[9px] text-white/40 uppercase tracking-wider font-bold">DOM Sections</span>
+                </div>
               </div>
               <div className="flex gap-2">
-                {chapters.map((c, i) => (
+                {chapters.map((c) => (
                   <div 
                     key={c.id} 
                     className={`w-8 h-1.5 rounded-full transition-all ${
@@ -106,10 +131,6 @@ export const ImprovedTimeline: React.FC = () => {
                     }`}
                   />
                 ))}
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-purple-400"></div>
-                <span className="text-[9px] text-white/40 uppercase tracking-wider font-bold">Story Beats</span>
               </div>
             </div>
           </div>
