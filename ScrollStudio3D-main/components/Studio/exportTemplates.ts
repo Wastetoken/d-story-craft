@@ -493,7 +493,8 @@ export const INDEX_HTML_TEMPLATE = (projectData: any) => {
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: ${chrome.pageBackgroundColor || '#ffffff'}; overflow-x: hidden; }
         #app { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 0; pointer-events: none; }
-        .scrolly-section { position: relative; z-index: 10; min-height: 100vh; pointer-events: none; }
+        .scrolly-section, .dom-section { pointer-events: none; }
+        .dom-section .content-card { pointer-events: auto; }
         .content-card { pointer-events: auto; }
         .content-card.is-active { opacity: 1 !important; transform: translateY(0) !important; }
     </style>
