@@ -14,7 +14,8 @@ export const ImprovedSidebar: React.FC = () => {
     projectName, setProjectInfo,
     setIsPlacingHotspot, removeHotspot,
     setLandingMode, selectedKeyframeId, setSelectedKeyframe, triggerKeyframeCapture,
-    viewMode, setViewMode
+    viewMode, setViewMode,
+    addDOMSection, removeDOMSection, updateDOMSection, updatePageChrome, setCurrentProgress
   } = useStore();
 
   const [activeTab, setActiveTab] = useState<'chapters' | 'environment' | 'camera' | 'story' | 'materials' | 'effects'>('chapters');
