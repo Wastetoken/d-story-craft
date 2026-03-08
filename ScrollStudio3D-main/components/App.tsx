@@ -151,6 +151,7 @@ const App: React.FC = () => {
         <>
           <ImprovedSidebar />
           <ImprovedTimeline />
+          <DOMSectionPreview />
         </>
       )}
 
