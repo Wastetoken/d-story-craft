@@ -312,7 +312,7 @@ The export captures your complete scene:
                     <li><b className="text-white">Page Background Color:</b> The color behind the 3D canvas.</li>
                     <li><b className="text-white">Navigation Bar:</b> Optional top bar with logo text, links, and customizable colors.</li>
                     <li><b className="text-white">Footer:</b> Optional bottom section with configurable text.</li>
-                    <li><b className="text-white">Scroll Indicator:</b> Animated "scroll down" hint for the viewer.</li>
+                    <li><b className="text-white">Progress Bar:</b> Optional colored bar at the top of the page that fills as the user scrolls.</li>
                   </ul>
                 </TutorialSection>
               </div>
