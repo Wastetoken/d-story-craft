@@ -124,6 +124,11 @@ export interface StoreState {
   removeHotspot: (id: string) => void;
   updateHotspot: (id: string, updates: Partial<Hotspot>) => void;
 
+  addDOMSection: (chapterId: string) => void;
+  removeDOMSection: (id: string) => void;
+  updateDOMSection: (id: string, updates: Partial<DOMSection>) => void;
+  updatePageChrome: (chapterId: string, updates: Partial<PageChrome>) => void;
+
   updateMaterial: (meshName: string, updates: Partial<MaterialOverride>) => void;
   setConfig: (config: Partial<SceneConfig>) => void;
   setAudit: (audit: AssetAudit) => void;
