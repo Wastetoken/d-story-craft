@@ -136,7 +136,7 @@ The export captures your complete scene:
 • DOM sections with free positioning (x/y/width/height as viewport %)
 • Story beats with fade-in/out timing
 • Post-processing settings (bloom, fog, DoF, vignette)
-• Page chrome (nav bar, footer, background, scroll indicator)
+• Page chrome (nav bar, footer, background, progress bar)
 • 3D model with environment and lighting`;
 
     navigator.clipboard.writeText(allDocs).then(() => {
@@ -371,7 +371,7 @@ The export captures your complete scene:
                     <li>DOM sections with free positioning (x/y/width/height as viewport %)</li>
                     <li>Story beats with fade-in/out timing</li>
                     <li>Post-processing settings (bloom, fog, DoF, vignette)</li>
-                    <li>Page chrome (nav bar, footer, background, scroll indicator)</li>
+                    <li>Page chrome (nav bar, footer, background, progress bar)</li>
                     <li>3D model with environment and lighting</li>
                   </ul>
                 </TutorialSection>
