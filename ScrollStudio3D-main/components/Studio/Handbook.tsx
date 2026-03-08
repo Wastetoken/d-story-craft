@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useStore } from '../../useStore';
 
 const TutorialSection: React.FC<{ title: string; children: React.ReactNode; icon: string }> = ({ title, children, icon }) => (
@@ -18,6 +18,18 @@ const TutorialSection: React.FC<{ title: string; children: React.ReactNode; icon
 export const Handbook: React.FC = () => {
   const { showHandbook, setShowHandbook } = useStore();
   const [activeTab, setActiveTab] = useState<'directing' | 'optics' | 'atmosphere' | 'fx' | 'canvas' | 'distribution'>('directing');
+  const [copied, setCopied] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const handleCopyAll = () => {
+    if (contentRef.current) {
+      const text = contentRef.current.innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      });
+    }
+  };
 
   if (!showHandbook) return null;
 
@@ -40,12 +52,21 @@ export const Handbook: React.FC = () => {
             <h2 className="text-4xl font-black italic tracking-tighter text-white uppercase leading-none">ScrollStudio Manual</h2>
             <p className="text-[10px] text-zinc-500 font-medium uppercase tracking-widest">Mastering the high-fidelity spatial narrative engine.</p>
           </div>
-          <button
-            onClick={() => setShowHandbook(false)}
-            className="w-10 h-10 rounded-full bg-white/5 hover:bg-white text-white hover:text-black flex items-center justify-center transition-all border border-white/10"
-          >
-            <i className="fa-solid fa-xmark text-xs"></i>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleCopyAll}
+              className={`w-10 h-10 rounded-full ${copied ? 'bg-emerald-500 border-emerald-400' : 'bg-white/5 border-white/10 hover:bg-white hover:text-black'} text-white flex items-center justify-center transition-all border`}
+              title="Copy all documentation"
+            >
+              <i className={`fa-solid ${copied ? 'fa-check' : 'fa-copy'} text-xs`}></i>
+            </button>
+            <button
+              onClick={() => setShowHandbook(false)}
+              className="w-10 h-10 rounded-full bg-white/5 hover:bg-white text-white hover:text-black flex items-center justify-center transition-all border border-white/10"
+            >
+              <i className="fa-solid fa-xmark text-xs"></i>
+            </button>
+          </div>
         </div>
 
         <div className="flex-1 min-h-0 flex flex-col md:flex-row">
@@ -74,7 +95,7 @@ export const Handbook: React.FC = () => {
           </div>
 
           {/* Content Area */}
-          <div className="flex-1 min-h-0 overflow-y-auto p-12 space-y-12 bg-gradient-to-br from-transparent to-white/[0.01]">
+          <div ref={contentRef} className="flex-1 min-h-0 overflow-y-auto p-12 space-y-12 bg-gradient-to-br from-transparent to-white/[0.01]">
 
             {activeTab === 'directing' && (
               <div className="space-y-10">
