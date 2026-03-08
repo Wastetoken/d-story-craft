@@ -1,25 +1,13 @@
-import '@react-three/fiber';
+import { ThreeElements } from '@react-three/fiber';
+
+declare module 'react' {
+  namespace JSX {
+    interface IntrinsicElements extends ThreeElements {}
+  }
+}
 
 declare global {
   namespace JSX {
-    interface IntrinsicElements {
-      group: any;
-      primitive: any;
-      ambientLight: any;
-      directionalLight: any;
-      pointLight: any;
-      mesh: any;
-      torusGeometry: any;
-      octahedronGeometry: any;
-      capsuleGeometry: any;
-      meshStandardMaterial: any;
-      meshBasicMaterial: any;
-      bufferGeometry: any;
-      lineBasicMaterial: any;
-      cylinderGeometry: any;
-      color: any;
-      fogExp2: any;
-      line_: any;
-    }
+    interface IntrinsicElements extends ThreeElements {}
   }
 }
