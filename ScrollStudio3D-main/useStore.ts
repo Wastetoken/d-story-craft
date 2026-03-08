@@ -378,7 +378,7 @@ export const useStore = create<StoreState & {
       : c)
   })),
 
-
+  updateMaterial: (meshName, updates) => set((state) => ({
     chapters: state.chapters.map(c => {
       if (c.id !== state.activeChapterId) return c;
       const current = c.materialOverrides[meshName] || {
