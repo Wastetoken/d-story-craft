@@ -18,7 +18,7 @@ export const ImprovedSidebar: React.FC = () => {
     addDOMSection, removeDOMSection, updateDOMSection, updatePageChrome, setCurrentProgress
   } = useStore();
 
-  const [activeTab, setActiveTab] = useState<'chapters' | 'environment' | 'camera' | 'story' | 'materials' | 'effects'>('chapters');
+  const [activeTab, setActiveTab] = useState<'chapters' | 'environment' | 'camera' | 'story' | 'layout' | 'materials' | 'effects'>('chapters');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
