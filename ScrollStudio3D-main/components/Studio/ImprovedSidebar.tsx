@@ -15,7 +15,8 @@ export const ImprovedSidebar: React.FC = () => {
     setIsPlacingHotspot, removeHotspot,
     setLandingMode, selectedKeyframeId, setSelectedKeyframe, triggerKeyframeCapture,
     viewMode, setViewMode,
-    addDOMSection, removeDOMSection, updateDOMSection, updatePageChrome, setCurrentProgress
+    addDOMSection, removeDOMSection, updateDOMSection, updatePageChrome, setCurrentProgress,
+    selectedDOMSectionId, setSelectedDOMSection
   } = useStore();
 
   const [activeTab, setActiveTab] = useState<'chapters' | 'environment' | 'camera' | 'story' | 'layout' | 'materials' | 'effects'>('chapters');
@@ -24,6 +25,23 @@ export const ImprovedSidebar: React.FC = () => {
   useEffect(() => {
     if (selectedMeshName) setActiveTab('materials');
   }, [selectedMeshName]);
+
+  // Listen for open-layout-tab event from timeline
+  useEffect(() => {
+    const handler = () => setActiveTab('layout');
+    window.addEventListener('open-layout-tab', handler);
+    return () => window.removeEventListener('open-layout-tab', handler);
+  }, []);
+
+  // Listen for add-story-beat event from timeline
+  useEffect(() => {
+    const handler = () => {
+      handleAddBeat();
+      setActiveTab('story');
+    };
+    window.addEventListener('add-story-beat', handler);
+    return () => window.removeEventListener('add-story-beat', handler);
+  }, [currentProgress]);
 
   const activeChapter = chapters.find(c => c.id === activeChapterId);
   if (!activeChapter) return null;
