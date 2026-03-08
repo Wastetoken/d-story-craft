@@ -65,6 +65,14 @@ When a section is selected, a small floating panel appears near it with quick-ac
 • Opacity: Background opacity slider (hidden when card style is "none").
 • Delete: Red trash button to remove the section entirely.
 
+SCROLL BEHAVIOR HUD
+When a section is selected, a small HUD appears in the top-right corner with scroll behavior controls:
+• Direction: Choose Vertical or Horizontal — these are mutually exclusive. Selecting one automatically deselects the other.
+• Pin: Independent toggle. When enabled, the section stays fixed on screen while the scroll catches up to its exit point.
+
+SAFE ZONE BRACKETS
+When a section is selected, white corner brackets appear around its edges. These are safe zone indicators — they show the element's exact bounding box on the viewport so you can align sections precisely.
+
 TIMING & SCROLL RANGE
 Each DOM section has a progress (entry) and exitProgress (exit) value. These control when the section is visible during the scroll.
 Set these by dragging the section's bar on the DOM row in the timeline. The left edge is entry, the right edge is exit.
@@ -91,7 +99,7 @@ The Layout tab in the sidebar controls Page Chrome — the overall page appearan
 • Page Background Color: The color behind the 3D canvas.
 • Navigation Bar: Optional top bar with logo text, links, and customizable colors.
 • Footer: Optional bottom section with configurable text.
-• Scroll Indicator: Animated "scroll down" hint for the viewer.
+• Progress Bar: Optional colored bar at the top of the page that fills as the user scrolls.
 
 ═══ VISUAL FX ═══
 
@@ -264,6 +272,18 @@ The export captures your complete scene:
                   </ul>
                 </TutorialSection>
 
+                <TutorialSection title="Scroll Behavior HUD" icon="fa-arrows-up-down">
+                  <p>When a section is selected, a small HUD appears in the top-right corner with scroll behavior controls for that section:</p>
+                  <ul className="list-disc pl-4 space-y-2">
+                    <li><b className="text-white">Direction:</b> Choose <b className="text-white">Vertical</b> or <b className="text-white">Horizontal</b> — these are mutually exclusive. Selecting one automatically deselects the other.</li>
+                    <li><b className="text-white">Pin:</b> Independent toggle. When enabled, the section stays fixed on screen while the scroll catches up to its exit point.</li>
+                  </ul>
+                </TutorialSection>
+
+                <TutorialSection title="Safe Zone Brackets" icon="fa-crop-simple">
+                  <p>When a section is selected, white corner brackets appear around its edges. These are <b className="text-white">safe zone indicators</b> — they show the element's exact bounding box on the viewport so you can align sections precisely.</p>
+                </TutorialSection>
+
                 <TutorialSection title="Timing & Scroll Range" icon="fa-clock">
                   <p>Each DOM section has a <b className="text-white">progress</b> (entry) and <b className="text-white">exitProgress</b> (exit) value. These control when the section is visible during the scroll.</p>
                   <p>Set these by dragging the section's bar on the <b className="text-white">DOM row</b> in the timeline. The left edge is entry, the right edge is exit.</p>
@@ -300,7 +320,7 @@ The export captures your complete scene:
                     <li><b className="text-white">Page Background Color:</b> The color behind the 3D canvas.</li>
                     <li><b className="text-white">Navigation Bar:</b> Optional top bar with logo text, links, and customizable colors.</li>
                     <li><b className="text-white">Footer:</b> Optional bottom section with configurable text.</li>
-                    <li><b className="text-white">Scroll Indicator:</b> Animated "scroll down" hint for the viewer.</li>
+                    <li><b className="text-white">Progress Bar:</b> Optional colored bar at the top of the page that fills as the user scrolls.</li>
                   </ul>
                 </TutorialSection>
               </div>
