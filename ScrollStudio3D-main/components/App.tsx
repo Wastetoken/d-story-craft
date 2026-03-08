@@ -151,9 +151,9 @@ const App: React.FC = () => {
         <>
           <ImprovedSidebar />
           <ImprovedTimeline />
-          <DOMSectionPreview />
         </>
       )}
+      {chapters && chapters.length > 0 && <DOMSectionPreview />}
 
       {mode === 'preview' && (
         <div className="relative z-[150] w-full">

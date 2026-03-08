@@ -441,16 +441,6 @@ export const ImprovedSidebar: React.FC = () => {
                 chrome={activeChapter.pageChrome || DEFAULT_PAGE_CHROME}
                 onUpdate={(updates) => updatePageChrome(activeChapter.id, updates)}
               />
-
-              {/* DOM Sections */}
-              <LayoutDOMSectionsSection
-                sections={activeChapter.domSections || []}
-                chapterId={activeChapter.id}
-                onAdd={() => addDOMSection(activeChapter.id)}
-                onRemove={removeDOMSection}
-                onUpdate={updateDOMSection}
-                onSeek={setCurrentProgress}
-              />
             </div>
           )}
 

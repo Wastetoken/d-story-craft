@@ -214,7 +214,13 @@ export interface DOMSection {
   id: string;
   progress: number;
   exitProgress: number;
-  layout: DOMSectionLayout;
+
+  // Free canvas positioning — all in viewport percentage units
+  x: number;       // left edge, 0–100 (% of viewport width)
+  y: number;       // top edge, 0–100 (% of viewport height)
+  width: number;   // element width, 0–100 (% of viewport width)
+  height: number;  // element min-height, 0–100 (% of viewport height)
+
   cardStyle: DOMSectionCardStyle;
   fontVariant: DOMSectionFontVariant;
 
