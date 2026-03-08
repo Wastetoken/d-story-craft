@@ -16,6 +16,22 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'ScrollStudio3D-main'),
     }
   },
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react-dom/client',
+      'react/jsx-runtime',
+      'three',
+      'zustand',
+      '@react-three/fiber',
+      '@react-three/drei',
+      '@react-three/postprocessing',
+      'gsap',
+      'gsap/ScrollTrigger',
+      'jszip',
+    ],
+  },
   build: {
     outDir: 'dist',
   }
