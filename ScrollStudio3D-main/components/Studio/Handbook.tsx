@@ -95,7 +95,7 @@ export const Handbook: React.FC = () => {
           </div>
 
           {/* Content Area */}
-          <div className="flex-1 min-h-0 overflow-y-auto p-12 space-y-12 bg-gradient-to-br from-transparent to-white/[0.01]">
+          <div ref={contentRef} className="flex-1 min-h-0 overflow-y-auto p-12 space-y-12 bg-gradient-to-br from-transparent to-white/[0.01]">
 
             {activeTab === 'directing' && (
               <div className="space-y-10">
