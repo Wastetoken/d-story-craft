@@ -66,14 +66,22 @@ class ScrollyPipeline {
         const card = el.querySelector('.content-card');
         this.domSectionEls.push({
           card: card,
+          el: el,
           progress: section.progress,
-          exitProgress: section.exitProgress
+          exitProgress: section.exitProgress,
+          pin: !!section.pin,
+          horizontalScroll: !!section.horizontalScroll,
+          verticalScroll: section.verticalScroll !== false,
+          scrollDirection: section.scrollDirection || 'vertical'
         });
       });
     });
     this.domSectionEls.sort(function(a, b) { return a.progress - b.progress; });
 
     this.progressBarEl = document.getElementById('scrolly-progress-bar') || null;
+
+    // Setup pinned section behavior
+    this.pinnedSections = this.domSectionEls.filter(function(s) { return s.pin; });
   }
 
   setupOverlay() {
