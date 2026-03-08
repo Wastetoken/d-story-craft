@@ -416,6 +416,12 @@ export const useStore = create<StoreState & {
 
   loadProject: (project) => {
     const chapters = project.chapters.map(c => {
+      // Ensure new fields have defaults for backwards compatibility
+      const chapter = {
+        ...c,
+        domSections: c.domSections || [],
+        pageChrome: { ...DEFAULT_PAGE_CHROME, ...(c.pageChrome || {}) },
+      };
       if (project.embeddedAssets && project.embeddedAssets[c.id]) {
         try {
           const base64 = project.embeddedAssets[c.id];
@@ -424,12 +430,12 @@ export const useStore = create<StoreState & {
           for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
           const blob = new Blob([bytes], { type: 'model/gltf-binary' });
           const url = URL.createObjectURL(blob) + '#.glb';
-          return { ...c, modelUrl: url };
+          return { ...chapter, modelUrl: url };
         } catch (e) {
           console.error("Failed to decode embedded asset for chapter:", c.id, e);
         }
       }
-      return c;
+      return chapter;
     });
 
     const firstChapter = chapters[0];
