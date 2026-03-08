@@ -208,10 +208,19 @@ const TimelineTrackRow: React.FC<{
 
   return (
     <div className="flex items-center gap-2 h-7">
-      <div className="flex items-center gap-1.5 w-20 shrink-0">
+      <div className="flex items-center gap-1.5 shrink-0" style={{ width: onAdd ? '72px' : '80px' }}>
         <div className={`w-1.5 h-1.5 rounded-full ${c.dot}`} />
         <span className={`text-[8px] font-bold uppercase tracking-wider ${c.text} opacity-70`}>{label}</span>
       </div>
+      {onAdd && (
+        <button
+          onClick={onAdd}
+          className={`w-5 h-5 rounded ${c.bg} text-white text-[10px] flex items-center justify-center hover:scale-110 transition-transform shrink-0`}
+          title={`Add ${label}`}
+        >
+          +
+        </button>
+      )}
       <div
         ref={trackRef}
         onClick={handleClick}
@@ -224,15 +233,6 @@ const TimelineTrackRow: React.FC<{
         />
         {children}
       </div>
-      {onAdd && (
-        <button
-          onClick={onAdd}
-          className={`w-5 h-5 rounded ${c.bg} text-white text-[10px] flex items-center justify-center hover:scale-110 transition-transform shrink-0`}
-          title={`Add ${label}`}
-        >
-          +
-        </button>
-      )}
     </div>
   );
 };

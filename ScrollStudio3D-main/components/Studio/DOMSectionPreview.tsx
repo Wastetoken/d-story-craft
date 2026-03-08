@@ -132,20 +132,24 @@ export const DOMSectionPreview: React.FC = () => {
 
   const chrome: PageChrome = activeChapter?.pageChrome || DEFAULT_PAGE_CHROME;
 
+  // Determine active section: selected section takes priority, then progress-based lookup
   const activeSection: DOMSection | null = useMemo(() => {
     if (!activeChapter) return null;
     const sections = activeChapter.domSections || [];
-    // If a section is selected, show it. Otherwise show the one at current progress.
+    if (sections.length === 0) return null;
+    // If a section is explicitly selected (e.g. clicked in timeline), show it
     if (selectedDOMSectionId) {
       const sel = sections.find(s => s.id === selectedDOMSectionId);
       if (sel) return sel;
     }
+    // Otherwise, show whichever section the playhead is inside
     return sections.find(s => currentProgress >= s.progress && currentProgress < s.exitProgress) || null;
   }, [activeChapter, currentProgress, selectedDOMSectionId]);
 
-  if (mode !== 'edit') return null;
-  // Always show the overlay frame when in edit mode with a chapter loaded
-  if (!activeChapter) return null;
+  // Must be in edit mode with a chapter loaded
+  if (mode !== 'edit' || !activeChapter) return null;
+  // No active section = no content card, but we still render the chrome overlay
+  const hasChapter = !!activeChapter;
 
   const section = activeSection;
   const font = section ? FONT_VARIANT_MAP[section.fontVariant] : null;
