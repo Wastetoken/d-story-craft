@@ -693,3 +693,299 @@ export const ImprovedSidebar: React.FC = () => {
     </div>
   );
 };
+
+// ============ LAYOUT TAB SUB-COMPONENTS ============
+
+const LayoutPageChromeSection: React.FC<{
+  chrome: import('../../types').PageChrome;
+  onUpdate: (updates: Partial<import('../../types').PageChrome>) => void;
+}> = ({ chrome, onUpdate }) => {
+  const [open, setOpen] = useState(true);
+
+  return (
+    <div className="space-y-3">
+      <button onClick={() => setOpen(!open)} className="flex items-center justify-between w-full text-sm font-bold text-white/90 uppercase tracking-wider">
+        <span>Page Chrome</span>
+        <i className={`fa-solid fa-chevron-${open ? 'up' : 'down'} text-white/40 text-xs`}></i>
+      </button>
+
+      {open && (
+        <div className="space-y-4">
+          {/* Page Background Color */}
+          <div className="p-4 bg-white/5 rounded-2xl border border-white/10 space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-white/70">Page Background</span>
+              <div className="flex gap-2 items-center">
+                <input type="color" value={chrome.pageBackgroundColor} onChange={(e) => onUpdate({ pageBackgroundColor: e.target.value })} className="w-6 h-6 rounded border-none cursor-pointer" />
+              </div>
+            </div>
+
+            {/* Nav Toggle */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-white/70">Show Navigation</span>
+              <button onClick={() => onUpdate({ showNav: !chrome.showNav })} className={`w-10 h-5 rounded-full transition-colors relative ${chrome.showNav ? 'bg-emerald-500' : 'bg-white/10'}`}>
+                <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-transform ${chrome.showNav ? 'left-6' : 'left-1'}`} />
+              </button>
+            </div>
+            {chrome.showNav && (
+              <div className="space-y-3 pl-2 border-l border-white/10">
+                <input type="text" value={chrome.navTitle} onChange={(e) => onUpdate({ navTitle: e.target.value })} placeholder="Nav Title" className="w-full bg-white/5 text-xs text-white outline-none rounded-xl p-3 border border-white/10" />
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-white/50">Text Color</span>
+                  <input type="color" value={chrome.navTextColor} onChange={(e) => onUpdate({ navTextColor: e.target.value })} className="w-6 h-6 rounded border-none cursor-pointer" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-white/50">Background</span>
+                  <input type="color" value={chrome.navBackgroundColor} onChange={(e) => onUpdate({ navBackgroundColor: e.target.value })} className="w-6 h-6 rounded border-none cursor-pointer" />
+                </div>
+                <div>
+                  <div className="flex justify-between text-[10px] text-white/50 mb-1">Opacity <span>{chrome.navBackgroundOpacity.toFixed(2)}</span></div>
+                  <input type="range" min="0" max="1" step="0.01" value={chrome.navBackgroundOpacity} onChange={(e) => onUpdate({ navBackgroundOpacity: parseFloat(e.target.value) })} className="w-full h-1 bg-white/10 rounded-full appearance-none accent-emerald-500" />
+                </div>
+              </div>
+            )}
+
+            {/* Progress Bar */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-white/70">Progress Bar</span>
+              <button onClick={() => onUpdate({ showProgressBar: !chrome.showProgressBar })} className={`w-10 h-5 rounded-full transition-colors relative ${chrome.showProgressBar ? 'bg-emerald-500' : 'bg-white/10'}`}>
+                <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-transform ${chrome.showProgressBar ? 'left-6' : 'left-1'}`} />
+              </button>
+            </div>
+            {chrome.showProgressBar && (
+              <div className="pl-2 border-l border-white/10">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-white/50">Color</span>
+                  <input type="color" value={chrome.progressBarColor} onChange={(e) => onUpdate({ progressBarColor: e.target.value })} className="w-6 h-6 rounded border-none cursor-pointer" />
+                </div>
+              </div>
+            )}
+
+            {/* Noise Overlay */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-white/70">Noise Overlay</span>
+              <button onClick={() => onUpdate({ showNoiseOverlay: !chrome.showNoiseOverlay })} className={`w-10 h-5 rounded-full transition-colors relative ${chrome.showNoiseOverlay ? 'bg-emerald-500' : 'bg-white/10'}`}>
+                <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-transform ${chrome.showNoiseOverlay ? 'left-6' : 'left-1'}`} />
+              </button>
+            </div>
+            {chrome.showNoiseOverlay && (
+              <div className="pl-2 border-l border-white/10">
+                <div className="flex justify-between text-[10px] text-white/50 mb-1">Opacity <span>{chrome.noiseOpacity.toFixed(3)}</span></div>
+                <input type="range" min="0" max="0.15" step="0.005" value={chrome.noiseOpacity} onChange={(e) => onUpdate({ noiseOpacity: parseFloat(e.target.value) })} className="w-full h-1 bg-white/10 rounded-full appearance-none accent-emerald-500" />
+              </div>
+            )}
+
+            {/* Vignette */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-white/70">Vignette</span>
+              <button onClick={() => onUpdate({ showVignette: !chrome.showVignette })} className={`w-10 h-5 rounded-full transition-colors relative ${chrome.showVignette ? 'bg-emerald-500' : 'bg-white/10'}`}>
+                <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-transform ${chrome.showVignette ? 'left-6' : 'left-1'}`} />
+              </button>
+            </div>
+            {chrome.showVignette && (
+              <div className="space-y-2 pl-2 border-l border-white/10">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-white/50">Color</span>
+                  <input type="color" value={chrome.vignetteColor} onChange={(e) => onUpdate({ vignetteColor: e.target.value })} className="w-6 h-6 rounded border-none cursor-pointer" />
+                </div>
+                <div>
+                  <div className="flex justify-between text-[10px] text-white/50 mb-1">Opacity <span>{chrome.vignetteOpacity.toFixed(2)}</span></div>
+                  <input type="range" min="0" max="1" step="0.01" value={chrome.vignetteOpacity} onChange={(e) => onUpdate({ vignetteOpacity: parseFloat(e.target.value) })} className="w-full h-1 bg-white/10 rounded-full appearance-none accent-emerald-500" />
+                </div>
+              </div>
+            )}
+
+            {/* Scanlines */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-white/70">Scanlines</span>
+              <button onClick={() => onUpdate({ showScanlines: !chrome.showScanlines })} className={`w-10 h-5 rounded-full transition-colors relative ${chrome.showScanlines ? 'bg-emerald-500' : 'bg-white/10'}`}>
+                <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-transform ${chrome.showScanlines ? 'left-6' : 'left-1'}`} />
+              </button>
+            </div>
+            {chrome.showScanlines && (
+              <div className="pl-2 border-l border-white/10">
+                <div className="flex justify-between text-[10px] text-white/50 mb-1">Opacity <span>{chrome.scanlinesOpacity.toFixed(2)}</span></div>
+                <input type="range" min="0" max="0.5" step="0.01" value={chrome.scanlinesOpacity} onChange={(e) => onUpdate({ scanlinesOpacity: parseFloat(e.target.value) })} className="w-full h-1 bg-white/10 rounded-full appearance-none accent-emerald-500" />
+              </div>
+            )}
+
+            {/* Footer */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-white/70">Show Footer</span>
+              <button onClick={() => onUpdate({ showFooter: !chrome.showFooter })} className={`w-10 h-5 rounded-full transition-colors relative ${chrome.showFooter ? 'bg-emerald-500' : 'bg-white/10'}`}>
+                <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-transform ${chrome.showFooter ? 'left-6' : 'left-1'}`} />
+              </button>
+            </div>
+            {chrome.showFooter && (
+              <div className="space-y-2 pl-2 border-l border-white/10">
+                <input type="text" value={chrome.footerText} onChange={(e) => onUpdate({ footerText: e.target.value })} placeholder="Footer text" className="w-full bg-white/5 text-xs text-white outline-none rounded-xl p-3 border border-white/10" />
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-white/50">Text Color</span>
+                  <input type="color" value={chrome.footerTextColor} onChange={(e) => onUpdate({ footerTextColor: e.target.value })} className="w-6 h-6 rounded border-none cursor-pointer" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-white/50">Background</span>
+                  <input type="color" value={chrome.footerBackgroundColor} onChange={(e) => onUpdate({ footerBackgroundColor: e.target.value })} className="w-6 h-6 rounded border-none cursor-pointer" />
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const LAYOUT_OPTIONS: { value: DOMSectionLayout; label: string; pos: string }[] = [
+  { value: 'left', label: 'Left', pos: 'top-1/2 left-1 -translate-y-1/2' },
+  { value: 'center', label: 'Center', pos: 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' },
+  { value: 'right', label: 'Right', pos: 'top-1/2 right-1 -translate-y-1/2' },
+  { value: 'bottom-left', label: 'B-Left', pos: 'bottom-1 left-1' },
+  { value: 'bottom-center', label: 'B-Center', pos: 'bottom-1 left-1/2 -translate-x-1/2' },
+  { value: 'bottom-right', label: 'B-Right', pos: 'bottom-1 right-1' },
+];
+
+const CARD_STYLES: DOMSectionCardStyle[] = ['glass', 'solid', 'outline', 'none'];
+const FONT_VARIANTS: DOMSectionFontVariant[] = ['display', 'sans', 'mono', 'serif'];
+
+const LayoutDOMSectionsSection: React.FC<{
+  sections: import('../../types').DOMSection[];
+  chapterId: string;
+  onAdd: () => void;
+  onRemove: (id: string) => void;
+  onUpdate: (id: string, updates: Partial<import('../../types').DOMSection>) => void;
+  onSeek: (progress: number) => void;
+}> = ({ sections, chapterId, onAdd, onRemove, onUpdate, onSeek }) => {
+  const [open, setOpen] = useState(true);
+
+  return (
+    <div className="space-y-3">
+      <button onClick={() => setOpen(!open)} className="flex items-center justify-between w-full text-sm font-bold text-white/90 uppercase tracking-wider">
+        <span>DOM Sections</span>
+        <i className={`fa-solid fa-chevron-${open ? 'up' : 'down'} text-white/40 text-xs`}></i>
+      </button>
+
+      {open && (
+        <div className="space-y-3">
+          <button
+            onClick={onAdd}
+            className="w-full px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold uppercase tracking-wider rounded-xl hover:shadow-lg hover:shadow-amber-500/20 transition-all"
+          >
+            <i className="fa-solid fa-plus mr-2"></i>Add Section
+          </button>
+
+          {sections.map((section) => (
+            <div key={section.id} className="p-4 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 transition-all space-y-3">
+              {/* Progress Badge */}
+              <div className="flex items-start justify-between">
+                <button
+                  onClick={() => onSeek(section.progress)}
+                  className="px-2 py-1 bg-amber-500/20 text-amber-400 text-[10px] font-bold rounded-lg hover:bg-amber-500/30 transition-all"
+                >
+                  @ {(section.progress * 100).toFixed(1)}%
+                </button>
+                <button
+                  onClick={() => onRemove(section.id)}
+                  className="w-7 h-7 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-400 transition-all flex items-center justify-center"
+                >
+                  <i className="fa-solid fa-trash text-xs"></i>
+                </button>
+              </div>
+
+              {/* Layout Picker */}
+              <div>
+                <div className="text-[10px] font-bold text-white/40 uppercase tracking-wider mb-2">Position</div>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {LAYOUT_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => onUpdate(section.id, { layout: opt.value })}
+                      className={`relative h-10 rounded-lg border text-[8px] font-bold uppercase transition-all ${
+                        section.layout === opt.value
+                          ? 'bg-amber-500/20 border-amber-500/50 text-amber-400'
+                          : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Card Style */}
+              <div>
+                <div className="text-[10px] font-bold text-white/40 uppercase tracking-wider mb-2">Card Style</div>
+                <div className="flex gap-1.5">
+                  {CARD_STYLES.map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => onUpdate(section.id, { cardStyle: s })}
+                      className={`flex-1 py-1.5 rounded-lg text-[9px] font-bold uppercase transition-all ${
+                        section.cardStyle === s
+                          ? 'bg-amber-500/20 border border-amber-500/50 text-amber-400'
+                          : 'bg-white/5 border border-white/10 text-white/40 hover:bg-white/10'
+                      }`}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Font */}
+              <div>
+                <div className="text-[10px] font-bold text-white/40 uppercase tracking-wider mb-2">Font</div>
+                <div className="flex gap-1.5">
+                  {FONT_VARIANTS.map((f) => (
+                    <button
+                      key={f}
+                      onClick={() => onUpdate(section.id, { fontVariant: f })}
+                      className={`flex-1 py-1.5 rounded-lg text-[9px] font-bold uppercase transition-all ${
+                        section.fontVariant === f
+                          ? 'bg-amber-500/20 border border-amber-500/50 text-amber-400'
+                          : 'bg-white/5 border border-white/10 text-white/40 hover:bg-white/10'
+                      }`}
+                    >
+                      {f}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Text Inputs */}
+              <input type="text" value={section.headline} onChange={(e) => onUpdate(section.id, { headline: e.target.value })} placeholder="Headline" className="w-full bg-white/5 text-xs text-white outline-none rounded-xl p-3 border border-white/10" />
+              <input type="text" value={section.subheading} onChange={(e) => onUpdate(section.id, { subheading: e.target.value })} placeholder="Subheading" className="w-full bg-white/5 text-xs text-white/70 outline-none rounded-xl p-3 border border-white/10" />
+              <textarea value={section.bodyText} onChange={(e) => onUpdate(section.id, { bodyText: e.target.value })} placeholder="Body Text" className="w-full bg-white/5 text-xs text-white/70 outline-none rounded-xl p-3 border border-white/10 resize-none" rows={3} />
+              <input type="text" value={section.buttonLabel} onChange={(e) => onUpdate(section.id, { buttonLabel: e.target.value })} placeholder="Button Label (empty = no button)" className="w-full bg-white/5 text-xs text-white/70 outline-none rounded-xl p-3 border border-white/10" />
+              {section.buttonLabel && (
+                <input type="text" value={section.buttonUrl} onChange={(e) => onUpdate(section.id, { buttonUrl: e.target.value })} placeholder="Button URL" className="w-full bg-white/5 text-xs text-white/70 outline-none rounded-xl p-3 border border-white/10" />
+              )}
+
+              {/* Colors */}
+              {section.cardStyle !== 'none' && (
+                <>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] text-white/50">Card Background</span>
+                    <input type="color" value={section.backgroundColor} onChange={(e) => onUpdate(section.id, { backgroundColor: e.target.value })} className="w-6 h-6 rounded border-none cursor-pointer" />
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-[10px] text-white/50 mb-1">Bg Opacity <span>{section.backgroundOpacity.toFixed(2)}</span></div>
+                    <input type="range" min="0" max="1" step="0.01" value={section.backgroundOpacity} onChange={(e) => onUpdate(section.id, { backgroundOpacity: parseFloat(e.target.value) })} className="w-full h-1 bg-white/10 rounded-full appearance-none accent-amber-500" />
+                  </div>
+                </>
+              )}
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-white/50">Text Color</span>
+                <input type="color" value={section.textColor} onChange={(e) => onUpdate(section.id, { textColor: e.target.value })} className="w-6 h-6 rounded border-none cursor-pointer" />
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-white/50">Accent Color</span>
+                <input type="color" value={section.accentColor} onChange={(e) => onUpdate(section.id, { accentColor: e.target.value })} className="w-6 h-6 rounded border-none cursor-pointer" />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
