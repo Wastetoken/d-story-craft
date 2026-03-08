@@ -52,12 +52,21 @@ export const Handbook: React.FC = () => {
             <h2 className="text-4xl font-black italic tracking-tighter text-white uppercase leading-none">ScrollStudio Manual</h2>
             <p className="text-[10px] text-zinc-500 font-medium uppercase tracking-widest">Mastering the high-fidelity spatial narrative engine.</p>
           </div>
-          <button
-            onClick={() => setShowHandbook(false)}
-            className="w-10 h-10 rounded-full bg-white/5 hover:bg-white text-white hover:text-black flex items-center justify-center transition-all border border-white/10"
-          >
-            <i className="fa-solid fa-xmark text-xs"></i>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleCopyAll}
+              className={`w-10 h-10 rounded-full ${copied ? 'bg-emerald-500 border-emerald-400' : 'bg-white/5 border-white/10 hover:bg-white hover:text-black'} text-white flex items-center justify-center transition-all border`}
+              title="Copy all documentation"
+            >
+              <i className={`fa-solid ${copied ? 'fa-check' : 'fa-copy'} text-xs`}></i>
+            </button>
+            <button
+              onClick={() => setShowHandbook(false)}
+              className="w-10 h-10 rounded-full bg-white/5 hover:bg-white text-white hover:text-black flex items-center justify-center transition-all border border-white/10"
+            >
+              <i className="fa-solid fa-xmark text-xs"></i>
+            </button>
+          </div>
         </div>
 
         <div className="flex-1 min-h-0 flex flex-col md:flex-row">
