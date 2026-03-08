@@ -96,7 +96,7 @@ export default function App() {
 
       // Add engine and templates
       zip.file('ScrollyPipeline.js', SCROLLY_PIPELINE_JS);
-      zip.file('index.html', INDEX_HTML_TEMPLATE(projectName));
+      zip.file('index.html', INDEX_HTML_TEMPLATE(data));
       zip.file('README.md', README_MD_TEMPLATE(projectName));
 
       // Add external assets if not embedded
