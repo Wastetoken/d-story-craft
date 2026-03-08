@@ -264,6 +264,18 @@ The export captures your complete scene:
                   </ul>
                 </TutorialSection>
 
+                <TutorialSection title="Scroll Behavior HUD" icon="fa-arrows-up-down">
+                  <p>When a section is selected, a small HUD appears in the top-right corner with scroll behavior controls for that section:</p>
+                  <ul className="list-disc pl-4 space-y-2">
+                    <li><b className="text-white">Direction:</b> Choose <b className="text-white">Vertical</b> or <b className="text-white">Horizontal</b> — these are mutually exclusive. Selecting one automatically deselects the other.</li>
+                    <li><b className="text-white">Pin:</b> Independent toggle. When enabled, the section stays fixed on screen while the scroll catches up to its exit point.</li>
+                  </ul>
+                </TutorialSection>
+
+                <TutorialSection title="Safe Zone Brackets" icon="fa-crop-simple">
+                  <p>When a section is selected, white corner brackets appear around its edges. These are <b className="text-white">safe zone indicators</b> — they show the element's exact bounding box on the viewport so you can align sections precisely.</p>
+                </TutorialSection>
+
                 <TutorialSection title="Timing & Scroll Range" icon="fa-clock">
                   <p>Each DOM section has a <b className="text-white">progress</b> (entry) and <b className="text-white">exitProgress</b> (exit) value. These control when the section is visible during the scroll.</p>
                   <p>Set these by dragging the section's bar on the <b className="text-white">DOM row</b> in the timeline. The left edge is entry, the right edge is exit.</p>
