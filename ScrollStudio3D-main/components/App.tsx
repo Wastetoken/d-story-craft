@@ -9,6 +9,7 @@ import { Handbook } from './Studio/Handbook';
 import { Uploader } from '../hooks/Uploader';
 import { KeyframeCapturer } from './Studio/KeyframeCapturer';
 import { ExportOverlay } from './Studio/ExportOverlay';
+import { DOMSectionPreview } from './Studio/DOMSectionPreview';
 import { LandingPage } from './Landing/LandingPage';
 
 import { useFontLoader } from '../hooks/useFontLoader';
