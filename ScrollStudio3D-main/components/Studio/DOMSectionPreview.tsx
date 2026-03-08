@@ -58,47 +58,50 @@ const SafeZoneBrackets: React.FC<{ targetRef: React.RefObject<HTMLDivElement | n
 // ---- Scroll Behavior HUD ----
 const ScrollBehaviorHUD: React.FC<{ section: DOMSection }> = ({ section }) => {
   const { updateDOMSection } = useStore();
-  const toggles: { key: keyof Pick<DOMSection, 'verticalScroll' | 'horizontalScroll' | 'pin'>; label: string; icon: string }[] = [
-    { key: 'verticalScroll', label: 'V-Scroll', icon: 'fa-arrows-up-down' },
-    { key: 'horizontalScroll', label: 'H-Scroll', icon: 'fa-arrows-left-right' },
-    { key: 'pin', label: 'Pin', icon: 'fa-thumbtack' },
-  ];
+
+  const setScrollDir = (dir: 'vertical' | 'horizontal') => {
+    updateDOMSection(section.id, {
+      verticalScroll: dir === 'vertical',
+      horizontalScroll: dir === 'horizontal',
+      scrollDirection: dir,
+    });
+  };
 
   return (
     <div className="fixed top-6 right-6 z-[200] pointer-events-auto">
       <div className="glass-panel rounded-xl border border-white/10 shadow-2xl p-3 space-y-2 min-w-[160px]">
         <div className="text-[8px] font-bold text-white/40 uppercase tracking-widest mb-1">Scroll Behavior</div>
-        {toggles.map(t => (
-          <div key={t.key} className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <i className={`fa-solid ${t.icon} text-[10px] text-white/40`} />
-              <span className="text-[10px] text-white/70 font-bold">{t.label}</span>
-            </div>
-            <button
-              onClick={() => updateDOMSection(section.id, { [t.key]: !section[t.key] })}
-              className={`w-8 h-4 rounded-full transition-colors relative ${(section[t.key] as boolean) ? 'bg-amber-500' : 'bg-white/10'}`}
-            >
-              <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-transform ${(section[t.key] as boolean) ? 'left-4' : 'left-0.5'}`} />
-            </button>
-          </div>
-        ))}
-        <div className="flex items-center justify-between pt-1 border-t border-white/10">
+        {/* Scroll direction — mutually exclusive */}
+        <div className="flex items-center justify-between">
           <span className="text-[10px] text-white/70 font-bold">Direction</span>
           <div className="flex gap-1">
             {(['vertical', 'horizontal'] as const).map(dir => (
               <button
                 key={dir}
-                onClick={() => updateDOMSection(section.id, { scrollDirection: dir })}
-                className={`px-2 py-0.5 rounded text-[8px] font-bold uppercase transition-all ${
+                onClick={() => setScrollDir(dir)}
+                className={`px-2.5 py-1 rounded text-[8px] font-bold uppercase transition-all ${
                   section.scrollDirection === dir
                     ? 'bg-amber-500/30 text-amber-400 border border-amber-500/50'
                     : 'bg-white/5 text-white/40 border border-white/10'
                 }`}
               >
-                {dir === 'vertical' ? 'V' : 'H'}
+                {dir === 'vertical' ? 'Vertical' : 'Horizontal'}
               </button>
             ))}
           </div>
+        </div>
+        {/* Pin — independent toggle */}
+        <div className="flex items-center justify-between pt-1 border-t border-white/10">
+          <div className="flex items-center gap-2">
+            <i className="fa-solid fa-thumbtack text-[10px] text-white/40" />
+            <span className="text-[10px] text-white/70 font-bold">Pin</span>
+          </div>
+          <button
+            onClick={() => updateDOMSection(section.id, { pin: !section.pin })}
+            className={`w-8 h-4 rounded-full transition-colors relative ${section.pin ? 'bg-amber-500' : 'bg-white/10'}`}
+          >
+            <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-transform ${section.pin ? 'left-4' : 'left-0.5'}`} />
+          </button>
         </div>
       </div>
     </div>
