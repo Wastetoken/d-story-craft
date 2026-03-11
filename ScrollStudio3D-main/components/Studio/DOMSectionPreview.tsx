@@ -504,9 +504,12 @@ export const DOMSectionPreview: React.FC = () => {
         )}
       </div>
 
-      {/* Safe zone brackets on selected element */}
-      {isEdit && selectedSection && selectedRect && (
-        <SafeZoneBrackets targetRef={{ current: document.querySelector(`[data-section-id="${selectedDOMSectionId}"]`) as HTMLDivElement | null }} />
+      {/* Permanent viewport safe zone — always visible in edit mode */}
+      {isEdit && <ViewportSafeZone />}
+
+      {/* Selection brackets on selected element */}
+      {isEdit && selectedSection && selectedDOMSectionId && (
+        <SelectionBrackets sectionId={selectedDOMSectionId} />
       )}
 
       {/* Floating properties panel */}
