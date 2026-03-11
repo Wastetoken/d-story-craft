@@ -45,14 +45,18 @@ Two camera modes for different tasks:
 
 ═══ CANVAS EDITOR ═══
 
+VIEWPORT SAFE ZONE
+The Safe Zone is a permanent viewport outline that is always visible in edit mode. It represents the exact area that will be visible in the final preview and export. White corner brackets mark the viewport boundary — anything outside this frame will not appear in the output.
+Use the safe zone to line up your 3D model and camera with precision. It's your composition guide for creating scroll-driven experiences.
+
 DOM SECTIONS OVERVIEW
-DOM Sections are HTML content cards that appear over the 3D canvas during the scroll. They're how you add text, calls to action, and storytelling elements to your experience.
-Think of it like compositing titles over video — the 3D scene is the backdrop, and your content floats over it.
+DOM Sections are HTML content overlays that appear within the safe zone during the scroll. They're how you add text, calls to action, and storytelling elements to your experience.
+Think of it like compositing titles over video — the 3D scene is the backdrop, and your content floats over it within the safe zone.
 
 DIRECT CANVAS EDITING
 DOM sections are edited directly on the viewport — not in the sidebar. This is the same pattern used by Spline, Webflow, and Framer.
-• Click a section to select it. A selection outline and resize handles appear.
-• Drag the section body to reposition it anywhere on the canvas. Position is stored as viewport percentages.
+• Click a section to select it. Amber selection brackets and resize handles appear.
+• Drag the section body to reposition it anywhere within the safe zone. Position is stored as viewport percentages.
 • Drag handles on the right edge, bottom edge, or corner to resize.
 • Double-click any text (headline, subheading, body) to edit it inline. Click away to save.
 • Click outside all sections to deselect.
@@ -70,8 +74,8 @@ When a section is selected, a small HUD appears in the top-right corner with scr
 • Direction: Choose Vertical or Horizontal — these are mutually exclusive. Selecting one automatically deselects the other.
 • Pin: Independent toggle. When enabled, the section stays fixed on screen while the scroll catches up to its exit point.
 
-SAFE ZONE BRACKETS
-When a section is selected, white corner brackets appear around its edges. These are safe zone indicators — they show the element's exact bounding box on the viewport so you can align sections precisely.
+SELECTION BRACKETS
+When a section is selected, amber corner brackets appear around its edges. These highlight the element's exact bounding box so you can align content precisely within the safe zone.
 
 TIMING & SCROLL RANGE
 Each DOM section has a progress (entry) and exitProgress (exit) value. These control when the section is visible during the scroll.
