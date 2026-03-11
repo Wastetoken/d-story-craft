@@ -13,25 +13,85 @@ function hexToRgb(hex: string): string {
   return `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}`;
 }
 
-// ---- Safe Zone Brackets ----
-const SafeZoneBrackets: React.FC<{ targetRef: React.RefObject<HTMLDivElement | null> }> = ({ targetRef }) => {
-  const [rect, setRect] = useState<DOMRect | null>(null);
-
-  const updateRect = useCallback(() => {
-    if (targetRef.current) setRect(targetRef.current.getBoundingClientRect());
-  }, [targetRef]);
+// ---- Viewport Safe Zone Frame ----
+// Always visible in edit mode. Shows the exact viewport boundary that maps to the preview/export.
+// Anything outside this frame will not appear in the final output.
+const ViewportSafeZone: React.FC = () => {
+  const [bounds, setBounds] = useState({ x: 0, y: 0, w: window.innerWidth, h: window.innerHeight });
 
   useEffect(() => {
-    updateRect();
-    window.addEventListener('resize', updateRect);
-    const interval = setInterval(updateRect, 200);
-    return () => { window.removeEventListener('resize', updateRect); clearInterval(interval); };
-  }, [updateRect]);
+    const update = () => setBounds({ x: 0, y: 0, w: window.innerWidth, h: window.innerHeight });
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
+
+  const size = 28;
+  const stroke = 2;
+  const color = 'rgba(255,255,255,0.5)';
+  const inset = 12; // px inset from viewport edges
+  const corners = [
+    { x: inset, y: inset, d: `M${size},0 L0,0 L0,${size}` },
+    { x: bounds.w - inset, y: inset, d: `M0,0 L${size},0 L${size},${size}` },
+    { x: bounds.w - inset, y: bounds.h - inset, d: `M${size},0 L${size},${size} L0,${size}` },
+    { x: inset, y: bounds.h - inset, d: `M0,0 L0,${size} L${size},${size}` },
+  ];
+
+  return (
+    <>
+      {/* Corner brackets */}
+      {corners.map((c, i) => (
+        <svg key={i} width={size} height={size} style={{
+          position: 'fixed',
+          left: i === 0 || i === 3 ? c.x : c.x - size,
+          top: i === 0 || i === 1 ? c.y : c.y - size,
+          pointerEvents: 'none', zIndex: 61,
+        }}>
+          <path d={c.d} fill="none" stroke={color} strokeWidth={stroke} />
+        </svg>
+      ))}
+      {/* "SAFE ZONE" label */}
+      <div style={{
+        position: 'fixed',
+        bottom: inset + 6,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        pointerEvents: 'none',
+        zIndex: 61,
+      }}>
+        <span style={{
+          fontSize: '8px',
+          fontWeight: 800,
+          letterSpacing: '0.3em',
+          textTransform: 'uppercase',
+          color: 'rgba(255,255,255,0.25)',
+        }}>
+          Safe Zone
+        </span>
+      </div>
+    </>
+  );
+};
+
+// ---- Element Selection Brackets ----
+const SelectionBrackets: React.FC<{ sectionId: string }> = ({ sectionId }) => {
+  const [rect, setRect] = useState<DOMRect | null>(null);
+
+  useEffect(() => {
+    const update = () => {
+      const el = document.querySelector(`[data-section-id="${sectionId}"]`) as HTMLDivElement | null;
+      if (el) setRect(el.getBoundingClientRect());
+    };
+    update();
+    const interval = setInterval(update, 200);
+    window.addEventListener('resize', update);
+    return () => { clearInterval(interval); window.removeEventListener('resize', update); };
+  }, [sectionId]);
 
   if (!rect) return null;
-  const size = 24;
-  const stroke = 2.5;
-  const color = 'rgba(255,255,255,0.9)';
+  const size = 20;
+  const stroke = 2;
+  const color = 'rgba(245,158,11,0.7)';
   const corners = [
     { x: rect.left, y: rect.top, d: `M${size},0 L0,0 L0,${size}` },
     { x: rect.right, y: rect.top, d: `M0,0 L${size},0 L${size},${size}` },
@@ -444,9 +504,12 @@ export const DOMSectionPreview: React.FC = () => {
         )}
       </div>
 
-      {/* Safe zone brackets on selected element */}
-      {isEdit && selectedSection && selectedRect && (
-        <SafeZoneBrackets targetRef={{ current: document.querySelector(`[data-section-id="${selectedDOMSectionId}"]`) as HTMLDivElement | null }} />
+      {/* Permanent viewport safe zone — always visible in edit mode */}
+      {isEdit && <ViewportSafeZone />}
+
+      {/* Selection brackets on selected element */}
+      {isEdit && selectedSection && selectedDOMSectionId && (
+        <SelectionBrackets sectionId={selectedDOMSectionId} />
       )}
 
       {/* Floating properties panel */}
